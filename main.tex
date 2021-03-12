@@ -140,7 +140,7 @@ computed via the forward algorithm
 \vspace{0.5em}
 \item Partition words and states jointly
 \vspace{0.5em}
-\item Words can only be emit by states in same group
+\item Words can only be emit by states in the aligned group
 \end{itemize}
 \begin{center}
 \begin{tikzpicture}[every node/.style={anchor=base,minimum size=8mm}]
@@ -398,9 +398,9 @@ $$
 \end{equation*}
 where we have the probability of the
 \begin{align*}
-&\textnormal{current state } & [\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t}),\\
-&\textnormal{last state } & [\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t}),\\
-&\textnormal{transition probability } & [\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
+&\textnormal{current state, } & [\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t}),\\
+&\textnormal{last state, } & [\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t}),\\
+&\textnormal{transition probability, } & [\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
 \end{align*}
 \end{itemize}
 \end{frame}
