@@ -26,9 +26,20 @@ ysep=0.2em,transform shape,line width=0.05em,top color=green,bottom color=green!
 ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!black] (X){};
 \end{tikzpicture}}
 
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
 %Information to be included in the title page:
 \title{Scaling Hidden Markov Models}
-\author{Justin T Chiu and Alexander Rush\\Cornell Tech}
+%\author{Justin T Chiu and Alexander Rush\\Cornell Tech}
 
 \setbeamertemplate{navigation symbols}{} 
 
@@ -39,13 +50,15 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
 \begin{frame}
 \frametitle{Hidden Markov Models in NLP}
 \begin{itemize}
-\item Historically significant latent variable models
+\item Simplest latent variable models for time series data
 \vspace{2em}
 \item Are thought to be very poor language models
 \vspace{2em}
 \item We show they are not!
 \end{itemize}
 \end{frame}
+
+\section{Scaling HMMs with Emission Sparsity}
 
 \begin{frame}
 \frametitle{Lessons from Large Neural Language Models}
@@ -64,7 +77,7 @@ We must overcome these issues when scaling HMMs
 \begin{frame}
 \frametitle{HMMs}
 
-For times $t$, model states $z_t \in \mcZ$, and tokens $x_t \in \mcX$,
+For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 
 \begin{center}
 \begin{tikzpicture}[]
@@ -90,10 +103,11 @@ For times $t$, model states $z_t \in \mcZ$, and tokens $x_t \in \mcX$,
     %\underbrace{p(x_t\mid z_t)}_{\textrm{emission}}
 %\end{equation*}
 \vspace{1em}
-We wish optimize
+We wish to optimize
 \begin{equation*}
-p(\bx) = \sum_\bz p(\bx,\bz)
+p(x) = \sum_z p(x,z),
 \end{equation*}
+computed via the forward algorithm
 \end{frame}
 
 \begin{frame}
@@ -227,7 +241,7 @@ state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
 \frametitle{Technique 3: State Dropout}
 \begin{itemize}
 \item State dropout encourages broad state usage
-\item At each batch, sample dropout mask $\mathbf{b} \in \set{0,1}^{|\mcZ|}$
+\item At each batch, sample dropout mask $\mathbf{b} \in \set{0,1}^{Z}$
 \end{itemize}
 \begin{center}
 \resizebox{0.75\width}{0.75\height}{
@@ -239,7 +253,7 @@ state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
 \begin{frame}
 \frametitle{Experiments}
 \begin{itemize}
-\item Language modeling on Penn Treebank and Wikitext-2
+\item Language modeling on Penn Treebank
 \vspace{1em}
 \item Baselines
     \begin{itemize}
@@ -251,7 +265,7 @@ state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
 \item Model
     \begin{itemize}
     \item $2^{15}$ (32k) state very large HMM (VL-HMM)
-    \item $M=128$ groups (256 states each), obtained via Brown Clustering
+    \item $M=128$ groups (256 states per type), obtained via Brown Clustering
     \item Dropout rate of $0.5$ during training
     \end{itemize}
 \end{itemize}
@@ -269,6 +283,7 @@ state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
     symbolic x coords={FF, LSTM, VL-HMM, HMM},
     xticklabels={FF, LSTM, VL-HMM, HMM},
     xtick={FF, LSTM, VL-HMM, HMM},
+    tick pos=left,
     every axis plot/.append style={
       ybar,
       bar shift=0pt,
@@ -276,6 +291,7 @@ state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
     },
     nodes near coords,
     nodes near coords align={vertical},
+    bar width=2em,
     ]
 
 \addplot coordinates {(FF,159.9)};
@@ -287,94 +303,18 @@ state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
 \end{tikzpicture}
 \end{frame}
 
-
-\begin{frame}
-\frametitle{Results on PTB and WT2 Test Data}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    ybar=5pt,
-    x=4cm,
-    enlarge x limits=0.6,
-    legend style={
-        at={(0.5,-0.15)},
-        anchor=north,
-        legend columns=-1,
-        minimum width=5em
-    },
-    ylabel={Test Perplexity},
-    symbolic x coords={PTB, WikiText2},
-    xtick=data,
-    %nodes near coords,
-    %nodes near coords align={vertical},
-    bar width=10 pt,
-    ]
-
-%\addplot coordinates {(PTB,141.2) (WikiText2,234.3)};
-\addplot coordinates {(PTB,152.0) (WikiText2,195.0)};
-\addplot coordinates {(PTB,88.8) (WikiText2,117.5)};
-\addplot coordinates {(PTB,115.8) (WikiText2,158.2)};
-
-\legend{FF, LSTM, VL-HMM}
-\end{axis}
-\end{tikzpicture}
-\end{frame}
-
-\begin{comment}
-\begin{frame}
-\frametitle{Results on PTB}
-
-\begin{table}[!t]
-\centering
-\begin{tabular}{llrr}
-\toprule
-Model & \# Params & Val PPL  & Test PPL\\
-\midrule
-KN 5-gram   & 2M & - & 141.2\\
-256 FF 5-gram  & 2.9M     & 159.9      & 152.0  \\
-AWD-LSTM  & 24M & 60.0 & 57.3\\
-2x256 dim LSTM  & 3.6M     & 93.6       & 88.8   \\
-%HMM+RNN   & 10M & 142.3 & -\\
-HMM ($|\mcZ|$=900) & 10M & 284.6 & -\\
-VL-HMM ($|\mcZ|=2^{15}$)   & 7.7M     & 125.0      & 115.8  \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Results on WikiText2}
-
-\begin{table}[!t]
-\centering
-\begin{tabular}{llrr}
-\toprule
-Model & \# Param & Val PPL & Test PPL\\
-\midrule
-KN 5-gram & 5.7M       & 248.7 & 234.3\\
-AWD-LSTM & 33M & 68.6 & 65.8\\
-256 FF 5-gram        & 8.8M    & 210.9  & 195.0\\
-2x256  LSTM     & 9.6M    & 124.5  & 117.5\\
-%32k state HMM (no fac)   & 17.3M   & 166.7  & -\\
-VL-HMM ($|\mcZ|=2^{15}$)           & 13.7M   & 169.0      & 158.2\\
-\bottomrule
-\end{tabular}
-\end{table}
-\end{frame}
-\end{comment}
-
 \begin{frame}
 \frametitle{State Size Ablation}
 
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    xlabel=State Size $|\mcZ|$,
+    xlabel=State Size $Z$,
     ylabel=Validation PPL,
     xmode=log,
     log basis x={2},
     xtick={},
+    tick pos=left,
     width=7cm,
     height=5cm
 ]
@@ -411,29 +351,215 @@ VL-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
 \end{center}
 \end{frame}
 
+\section{Scaling HMMs with Kernel Methods}
+
 \begin{frame}
 \frametitle{Embedded Structure Prediction}
 \begin{itemize}
-\item 
+\item The previous work relied on emission sparsity constraints
+\vspace{2em}
+\item Can we scale with weaker assumptions?
+\vspace{2em}
+\item Reduce the quadratic dependence of inference on number of states
+    to linear with kernel trick
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Generalized Softmax}
+Focusing on the transition distribution,
+\vspace{1em}
 \begin{itemize}
-\item 
+\item Softmax
+$$p(z_t \mid z_{t-1}) = \frac{\exp(\bu_{z_{t-1}}^\top \bv_{z_{t}})}
+{\sum_z \exp(\bu_{z_{t-1}}^\top \bv_z)}$$
+\vspace{1em}
+\item Generalized Softmax
+$$p(z_t \mid z_{t-1})
+= \frac{K(\bu, \bv)}{\sum_z K(\bu,\bv_z)}
+= \frac{\phi(\bu)^\top\phi(\bv)}
+    {\sum_z \phi(\bu)^\top\phi(\bv_z)},$$
+for positive kernel $K:\R^d\times\R^d\to\R_+$
+and feature map $\phi:\R^d\to\R^f$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+\begin{itemize}
+\item The key $O(Z^2)$ step in the forward algorithm:
+$$
+p(z_t \mid x_{<t}) = \sum_{z_{t-1}} p(z_t \mid z_{t-1})p(z_t \mid x_{<t})
+$$
+\vspace{1em}
+\item In matrix form, 
+\begin{equation*}
+\bm\gamma_t = \underbrace{\bm\alpha_{t-1}}_{\R^Z}\underbrace{\Lambda_{}}_{\R^{Z \times Z}},
+\end{equation*}
+where
+\begin{align*}
+[\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t})\\
+[\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t})\\
+[\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
+\end{align*}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Embedded Inference}
 \begin{itemize}
-\item 
+\item Use generalized softmax in transition distribution
+$$[\Lambda]_{z_{t-1},z_t} = p(z_t\mid z_{t-1}) \propto \phi(\bu_{z_{t-1}})^\top\phi(\bv_{z_t})$$
+\item In matrix form,
+\begin{equation*}
+\bm\gamma_t = \bm\alpha_{t-1}\Lambda =
+\underbrace{\bm\alpha_{t-1}}_{\R^Z}
+\underbrace{\textrm{diag}(d)}_{\R^{Z \times Z}}
+\underbrace{\phi(U)}_{\R^{Z \times f}}
+\underbrace{\phi(V)^\top}_{\R^{f \times Z}},
+\end{equation*}
+with stacked embeddings $\phi(U),\phi(V)$
+and normalizing constants $d$
+\vspace{1em}
+\item Takes $O(Zf)$ time from left to right!
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Results}
+\frametitle{Experiments}
+\begin{itemize}
+\item Language modeling on PTB
+\vspace{2em}
+\item Work directly with feature map $\phi(\bx) = \exp\left(W\bx - \frac{\|x\|^2}{2}\right)$,
+with learned $W\in\R^{d \times f}$
+\vspace{2em}
+\item No dropout or sparsity constraints
+\end{itemize}
+\end{frame}
+
+\begin{comment}
+\begin{frame}
+\frametitle{Results on PTB Validation}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel=Number of features $f$,
+    ylabel=Validation PPL,
+    xmode=log,
+    log basis x={2},
+    xtick={},
+    tick pos=left,
+    width=7cm,
+    height=5cm,
+    legend pos=outer north east
+]
+\addplot plot coordinates {
+(1024,  163)
+(2048,  163)
+(4096,  157)
+(8192,  156)
+};
+\addplot plot coordinates {
+(1024,  167)
+(2048,  162)
+(4096,  162)
+(8192,  155)
+};
+\legend{$Z=16k$,$Z=8k$}
+\end{axis}
+\end{tikzpicture}
+\end{frame}
+\end{comment}
+
+\begin{comment}
+\begin{frame}
+\frametitle{Results on PTB Validation}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel=Number of features $f$,
+    ylabel=Validation PPL,
+    xmode=log,
+    log basis x={2},
+    xtick={},
+    tick pos=left,
+    width=7cm,
+    height=5cm,
+    legend pos=outer north east
+]
+\addplot plot coordinates {
+(128,  186)
+(256,  180)
+(512,  177)
+(1024,  163)
+};
+\addplot plot coordinates {
+(128,  195)
+(256,  182)
+(512,  177)
+(1024,  166)
+};
+\addplot plot coordinates {
+(128,  192)
+(256,  180)
+(512,  179)
+(1024,  177)
+};
+\legend{$Z=4k$,$Z=2k$,$Z=1k$}
+\end{axis}
+\end{tikzpicture}
+\end{frame}
+\end{comment}
+
+\begin{frame}
+\frametitle{Results on PTB Validation}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel=Number of states $Z$,
+    ylabel=Validation PPL,
+    xmode=log,
+    log basis x={2},
+    xtick=data,
+    xticklabels={1024,2048,4096},
+    tick pos=left,
+    width=7cm,
+    height=5cm,
+    legend pos=outer north east
+]
+\addplot plot coordinates {
+(1024,  182)
+(2048,  172)
+(4096,  165)
+};
+\addplot plot coordinates {
+(1024,  177)
+(2048,  166)
+(4096,  163)
+};
+\addplot plot coordinates {
+(1024,  179)
+(2048,  177)
+(4096,  177)
+};
+\addplot plot coordinates {
+(1024,  180)
+(2048,  182)
+(4096,  180)
+};
+\addplot plot coordinates {
+(1024,  192)
+(2048,  195)
+(4096,  186)
+};
+\legend{softmax,$f=1024$,$f=512$,$f=256$,$f=128$}
+\end{axis}
+\end{tikzpicture}
+\vspace{1em}
+\begin{itemize}
+    \item Holding number of features fixed, perplexity improves
+        or remains the same with an increasing number of states
+\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -441,7 +567,7 @@ VL-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
 \begin{itemize}
 \item HMMs are competitive language models
 \vspace{2em}
-\item Introduced 3 techniques for tackling speed and overfitting
+\item Introduced 4 techniques for tackling speed and overfitting
 \vspace{2em}
 \item A great time to revisit other discrete latent variable models
 \end{itemize}
