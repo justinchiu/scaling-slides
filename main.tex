@@ -413,8 +413,7 @@ $$[\Lambda]_{z_{t-1},z_t} = p(z_t\mid z_{t-1}) \propto \phi(\bu_{z_{t-1}})^\top\
 \item In matrix form,
 \begin{equation*}
 \bm\gamma_t = \bm\alpha_{t-1}\Lambda =
-\underbrace{\bm\alpha_{t-1}}_{\R^Z}
-\underbrace{\textrm{diag}(d)}_{\R^{Z \times Z}}
+\underbrace{(\bm\alpha_{t-1}\circ d)}_{\R^Z}
 \underbrace{\phi(U)}_{\R^{Z \times f}}
 \underbrace{\phi(V)^\top}_{\R^{f \times Z}},
 \end{equation*}
@@ -575,11 +574,11 @@ with learned $W\in\R^{d \times f}$
 \begin{frame}
 \frametitle{Conclusion}
 \begin{itemize}
-\item HMMs are competitive language models
+\item Hopeful that HMMs can be competitive language models
 \vspace{2em}
 \item Introduced 4 techniques for tackling speed and overfitting
 \vspace{2em}
-\item A great time to revisit other discrete latent variable models
+\item Future work will extend to other discrete latent variable models
 \end{itemize}
 \end{frame}
 
