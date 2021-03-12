@@ -396,11 +396,11 @@ $$
 \begin{equation*}
 \bm\gamma_t = \underbrace{\bm\alpha_{t-1}}_{\R^Z}\underbrace{\Lambda_{}}_{\R^{Z \times Z}},
 \end{equation*}
-where
+where we have the probability of the
 \begin{align*}
-[\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t})\\
-[\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t})\\
-[\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
+&\textnormal{current state } & [\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t}),\\
+&\textnormal{last state } & [\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t}),\\
+&\textnormal{transition probability } & [\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
 \end{align*}
 \end{itemize}
 \end{frame}
