@@ -48,34 +48,53 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
 \frame{\titlepage}
 
 \begin{frame}
+\frametitle{Latent Variables Models in NLP}
+\begin{itemize}
+\item NLP benchmarks are dominated by fully observed models
+\vspace{2em}
+\item But most tasks are fully supervised
+\vspace{2em}
+\item Evaluation of unsupervised is also difficult
+\vspace{2em}
+\item Make latent variable models competitive on an existing task
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Language Modeling}
+\begin{itemize}
+\item Given the words seen so far, predict the next word
+\vspace{2em}
+\item Language requires modeling long-range phenomena
+\end{itemize}
+PICTURE
+\end{frame}
+
+\begin{frame}
+\frametitle{Research Question}
+\begin{itemize}
+\item How far can we scale simple latent variables models?
+\vspace{2em}
+\item Under the assumption that tasks will only be developed if models are
+    reasonably performant
+\end{itemize}
+\end{frame}
+
+\begin{frame}
 \frametitle{Hidden Markov Models in NLP}
 \begin{itemize}
 \item Simplest latent variable models for time series data
 \vspace{2em}
 \item Are thought to be very poor language models
 \vspace{2em}
-\item We show they are not!
+\item We show they are better than previously thought once scaled
 \end{itemize}
 \end{frame}
 
-\section{Scaling HMMs with Emission Sparsity}
+\section{Background: HMMs}
 
 \begin{frame}
-\frametitle{Lessons from Large Neural Language Models}
-
-Large models perform better but are \ldots
-\vspace{1em}
-\begin{enumerate}
-\item Slow to train
-\vspace{1em}
-\item Prone to overfitting
-\end{enumerate}
-\vspace{1em}
-We must overcome these issues when scaling HMMs
-\end{frame}
-
-\begin{frame}
-\frametitle{HMMs}
+\frametitle{HMM Notation}
 
 For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 
@@ -105,20 +124,76 @@ For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 \vspace{1em}
 We wish to optimize
 \begin{equation*}
-p(x) = \sum_z p(x,z),
+p(x) = \sum_{z_1}\cdots\sum_{z_T}p(x, z),
 \end{equation*}
 computed via the forward algorithm
 \end{frame}
 
 \begin{frame}
-\frametitle{3 Techniques for Training Large HMMs}
+\frametitle{Inference}
+Given observed $x = (x_1, \ldots, x_T)$
+\vspace{2em}
 \begin{itemize}
-\item Block-sparse emission constraints
-\vspace{1em}
-    \begin{itemize}
-    \item[] \FancyUpArrow~Speed
-    \end{itemize}
-\vspace{1em}
+\item Start $\bm\pi\in[0,1]^Z$, with
+    $$[\bm\pi]_{z_1} = p(x_1 \mid z_1)p(z_1)$$
+\item Transition operators $\Lambda\in[0,1]^{Z \times Z}$, with
+    $$[\Lambda_t]_{z_{t-1},z_t} = p(x_t \mid z_t)p(z_t \mid z_{t-1})$$
+\item Forward algorithm computes evidence
+$$p(x) = \underbrace{\bm\pi^\top\Lambda_2\Lambda_3}_{\alpha_3}\cdots\Lambda_T\bm1$$
+\item Each $[\alpha_t]_{z_t} = p(z_t, x_{\le t})$
+\end{itemize}
+\end{frame}
+
+%\begin{frame}
+%\frametitle{Inference}
+%\begin{itemize}
+%\end{itemize}
+%\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+\begin{columns}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{itemize}
+    \item Nodes correspond to states
+    \vspace{2em}
+    \item Edges to entries in $\Lambda_t$
+    \vspace{2em}
+    \item Sequentially compute posterior state probabilities
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{figure}
+\begin{center}
+\resizebox{0.8\width}{0.8\height}{
+\input{img/diagram_full.tex}
+}
+\end{center}
+\end{figure}
+\end{column}
+\end{columns}
+\end{frame}
+
+\section{Scaling HMMs}
+
+\begin{frame}
+\frametitle{Lessons from Large Neural Language Models}
+
+Large models perform better but are \ldots
+\vspace{2em}
+\begin{enumerate}
+\item Slow to train
+\vspace{2em}
+\item Prone to overfitting
+\end{enumerate}
+\vspace{2em}
+We must overcome these issues when scaling HMMs
+\end{frame}
+
+
+\begin{frame}
+\frametitle{4 Techniques for Training Large HMMs}
+\begin{itemize}
 \item Compact neural parameterization
 \vspace{1em}
     \begin{itemize}
@@ -130,11 +205,53 @@ computed via the forward algorithm
     \begin{itemize}
     \item[] \FancyUpArrow~Speed \quad \FancyUpArrow~Generalization
     \end{itemize}
+\vspace{1em}
+\item Block-sparse emission constraints
+\vspace{1em}
+    \begin{itemize}
+    \item[] \FancyUpArrow~Speed
+    \end{itemize}
+\vspace{1em}
+\item Kernel-based generalized softmax
+\vspace{1em}
+    \begin{itemize}
+    \item[] \FancyUpArrow~Speed
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Technique 1: Block-Sparse Emission Constraints}
+\frametitle{Technique 1: Neural Parameterization}
+\begin{itemize}
+\item A neural parameterization allows for parameter sharing
+\item Generate conditional distributions from
+state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
+\end{itemize}
+\begin{center}
+\includegraphics[height=1.7in]{img/blocksparse_mat_no_block.pdf}
+\end{center}
+
+REDO. picture should show $p(x \mid z) = \exp(L R^\top)$,
+generating L and R from neural networks
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Technique 2: State Dropout}
+\begin{itemize}
+\item State dropout encourages broad state usage
+\item At each batch, sample dropout mask $\mathbf{b} \in \set{0,1}^{Z}$
+\end{itemize}
+\begin{center}
+\resizebox{0.75\width}{0.75\height}{
+\input{img/trellis.tex}
+}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Technique 3: Block-Sparse Emission Constraints}
+This slide sucks, redo
 \begin{itemize}
 \item Reduce cost of marginalization by enforcing structure
 \vspace{0.5em}
@@ -226,30 +343,68 @@ Given each word $x_t$, only the states in the correct group can occur
 \end{frame}
 
 \begin{frame}
-\frametitle{Technique 2: Neural Parameterization}
+\frametitle{Technique 4: Generalized Softmax}
+Focusing on the transition distribution,
+\vspace{1em}
 \begin{itemize}
-\item A neural parameterization allows for parameter sharing
-\item Generate conditional distributions from
-state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
+\item Softmax
+$$p(z_t \mid z_{t-1}) = \frac{\exp(\bu_{z_{t-1}}^\top \bv_{z_{t}})}
+{\sum_z \exp(\bu_{z_{t-1}}^\top \bv_z)}$$
+\vspace{1em}
+\item Generalized Softmax
+$$p(z_t \mid z_{t-1})
+= \frac{K(\bu, \bv)}{\sum_z K(\bu,\bv_z)}
+= \frac{\phi(\bu)^\top\phi(\bv)}
+    {\sum_z \phi(\bu)^\top\phi(\bv_z)},$$
+for positive kernel $K:\R^d\times\R^d\to\R_+$
+and feature map $\phi:\R^d\to\R^f$
 \end{itemize}
-\begin{center}
-\includegraphics[height=1.7in]{img/blocksparse_mat_no_block.pdf}
-\end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Technique 3: State Dropout}
+\frametitle{Generalized Softmax: Inference}
 \begin{itemize}
-\item State dropout encourages broad state usage
-\item At each batch, sample dropout mask $\mathbf{b} \in \set{0,1}^{Z}$
+\item The key $O(Z^2)$ step in the forward algorithm:
+$$
+p(z_t \mid x_{<t}) = \sum_{z_{t-1}} p(z_t \mid z_{t-1})p(z_{t-1} \mid x_{<t})
+$$
+\vspace{1em}
+\item In matrix form, 
+\begin{equation*}
+\bm\gamma_t = \underbrace{\bm\alpha_{t-1}}_{\R^Z}\underbrace{\Lambda_{}}_{\R^{Z \times Z}},
+\end{equation*}
+where we have the probability of the
+\begin{align*}
+&\textnormal{current state, } & [\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t}),\\
+&\textnormal{last state, } & [\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t}),\\
+&\textnormal{transition probability, } & [\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
+\end{align*}
 \end{itemize}
-\begin{center}
-\resizebox{0.75\width}{0.75\height}{
-\input{img/trellis.tex}
-}
-\end{center}
 \end{frame}
 
+\begin{frame}
+\frametitle{Generalized Softmax: Inference}
+\begin{itemize}
+\item Use generalized softmax in transition distribution
+$$[\Lambda]_{z_{t-1},z_t} = p(z_t\mid z_{t-1}) \propto \phi(\bu_{z_{t-1}})^\top\phi(\bv_{z_t})$$
+\item Allows us to apply associative property of matrix multiplication
+\begin{align*}
+\bm\gamma_t
+&= \bm\alpha_{t-1}\Lambda\\
+&= \bm\alpha_{t-1}(\textrm{diag}(d)\phi(U)\phi(V)^\top)\\
+&= \underbrace{(\bm\alpha_{t-1}\circ d)}_{\R^Z}
+\underbrace{\phi(U)}_{\R^{Z \times f}}
+\underbrace{\phi(V)^\top}_{\R^{f \times Z}},
+\end{align*}
+with stacked embeddings $\phi(U),\phi(V) = [\phi(\bv_1), \ldots,\phi(\bv_Z)]$
+and normalizing constants $d$
+\vspace{1em}
+\item Takes $O(Zf)$ time from left to right!
+\end{itemize}
+\end{frame}
+
+
+\section{Experiments}
 \begin{frame}
 \frametitle{Experiments}
 \begin{itemize}
@@ -349,81 +504,6 @@ VL-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
 \bottomrule
 \end{tabular}
 \end{center}
-\end{frame}
-
-\section{Scaling HMMs with Kernel Methods}
-
-\begin{frame}
-\frametitle{Embedded Structure Prediction}
-\begin{itemize}
-\item The previous model relied on emission sparsity constraints
-\vspace{2em}
-\item Can we scale with weaker assumptions?
-\vspace{2em}
-\item Reduce the quadratic dependence of inference on number of states
-    to linear with kernel trick
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Generalized Softmax}
-Focusing on the transition distribution,
-\vspace{1em}
-\begin{itemize}
-\item Softmax
-$$p(z_t \mid z_{t-1}) = \frac{\exp(\bu_{z_{t-1}}^\top \bv_{z_{t}})}
-{\sum_z \exp(\bu_{z_{t-1}}^\top \bv_z)}$$
-\vspace{1em}
-\item Generalized Softmax
-$$p(z_t \mid z_{t-1})
-= \frac{K(\bu, \bv)}{\sum_z K(\bu,\bv_z)}
-= \frac{\phi(\bu)^\top\phi(\bv)}
-    {\sum_z \phi(\bu)^\top\phi(\bv_z)},$$
-for positive kernel $K:\R^d\times\R^d\to\R_+$
-and feature map $\phi:\R^d\to\R^f$
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Inference}
-\begin{itemize}
-\item The key $O(Z^2)$ step in the forward algorithm:
-$$
-p(z_t \mid x_{<t}) = \sum_{z_{t-1}} p(z_t \mid z_{t-1})p(z_{t-1} \mid x_{<t})
-$$
-\vspace{1em}
-\item In matrix form, 
-\begin{equation*}
-\bm\gamma_t = \underbrace{\bm\alpha_{t-1}}_{\R^Z}\underbrace{\Lambda_{}}_{\R^{Z \times Z}},
-\end{equation*}
-where we have the probability of the
-\begin{align*}
-&\textnormal{current state, } & [\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t}),\\
-&\textnormal{last state, } & [\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t}),\\
-&\textnormal{transition probability, } & [\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
-\end{align*}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Embedded Inference}
-\begin{itemize}
-\item Use generalized softmax in transition distribution
-$$[\Lambda]_{z_{t-1},z_t} = p(z_t\mid z_{t-1}) \propto \phi(\bu_{z_{t-1}})^\top\phi(\bv_{z_t})$$
-\item Allows us to apply associative property of matrix multiplication
-\begin{align*}
-\bm\gamma_t
-&= \bm\alpha_{t-1}\Lambda\\
-&= \bm\alpha_{t-1}(\textrm{diag}(d)\phi(U)\phi(V)^\top)\\
-&= \underbrace{(\bm\alpha_{t-1}\circ d)}_{\R^Z}
-\underbrace{\phi(U)}_{\R^{Z \times f}}
-\underbrace{\phi(V)^\top}_{\R^{f \times Z}},
-\end{align*}
-with stacked embeddings $\phi(U),\phi(V) = [\phi(\bv_1), \ldots,\phi(\bv_Z)]$
-and normalizing constants $d$,
-\vspace{1em}
-\item Takes $O(Zf)$ time from left to right!
-\end{itemize}
 \end{frame}
 
 \begin{frame}
