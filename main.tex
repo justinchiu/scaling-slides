@@ -49,14 +49,17 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
 
 \begin{frame}
 \frametitle{Latent Variables Models in NLP}
+Chicken and egg problem:
+\vspace{2em}
 \begin{itemize}
 \item NLP benchmarks are dominated by fully observed models
 \vspace{2em}
-\item But most tasks are fully supervised
+\item Most tasks are fully supervised
 \vspace{2em}
-\item Evaluation of unsupervised is also difficult
+\item Evaluation of unsupervised tasks is also difficult
 \vspace{2em}
-\item Make latent variable models competitive on an existing task
+\item Goal: Demonstrate efficacy of latent variable models by
+    making them competitive on an existing task
 \end{itemize}
 \end{frame}
 
@@ -94,7 +97,7 @@ PICTURE
 \section{Background: HMMs}
 
 \begin{frame}
-\frametitle{HMM Notation}
+\frametitle{HMMs}
 
 For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 
@@ -116,30 +119,32 @@ For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 \end{tikzpicture}
 \end{center}
 
-%\begin{equation*}
-%p(\bx,\bz) = \prod_{t=1}^T 
-    %\underbrace{p(z_t \mid z_{t-1})}_{\textrm{transition}}
-    %\underbrace{p(x_t\mid z_t)}_{\textrm{emission}}
-%\end{equation*}
+\begin{itemize}
+\item Joint distribution $p(x,z) = \prod_t p(x_t \mid z_t)p(z_t \mid z_{t-1})$
 \vspace{1em}
-We wish to optimize
-\begin{equation*}
-p(x) = \sum_{z_1}\cdots\sum_{z_T}p(x, z),
-\end{equation*}
-computed via the forward algorithm
+\item Start vector $\pi\in[0,1]^{Z}$, with $[\pi]_{z_0} = p(z_0)$
+\vspace{1em}
+\item Transition matrix $A\in[0,1]^{Z \times Z},$ with $[A]_{z_{t-1},z_t} = p(z_t \mid z_{t-1})$
+\vspace{1em}
+\item Emission matrix $O\in[0,1]^{Z \times X}$, with $[O]_{z_t, x_t} = p(x_t \mid z_t)$
+\end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Inference}
 Given observed $x = (x_1, \ldots, x_T)$
+\vspace{1em}
+We wish to maximize
+\begin{equation*}
+p(x) = \sum_{z_1}\cdots\sum_{z_T}p(x, z),
+\end{equation*}
+computed via the forward algorithm
 \vspace{2em}
 \begin{itemize}
-\item Start $\bm\pi\in[0,1]^Z$, with
-    $$[\bm\pi]_{z_1} = p(x_1 \mid z_1)p(z_1)$$
-\item Transition operators $\Lambda\in[0,1]^{Z \times Z}$, with
-    $$[\Lambda_t]_{z_{t-1},z_t} = p(x_t \mid z_t)p(z_t \mid z_{t-1})$$
+\item Start $\alpha_1 = \pi [O]_{\cdot,x_1}$
+\item Transition operators $\Lambda_t = A\diag([O]_{\cdot,x_t})\in[0,1]^{Z \times Z}$
 \item Forward algorithm computes evidence
-$$p(x) = \underbrace{\bm\pi^\top\Lambda_2\Lambda_3}_{\alpha_3}\cdots\Lambda_T\bm1$$
+$$p(x) = \underbrace{\alpha_1^\top\Lambda_2\Lambda_3}_{\alpha_3}\cdots\Lambda_T\bm1$$
 \item Each $[\alpha_t]_{z_t} = p(z_t, x_{\le t})$
 \end{itemize}
 \end{frame}
