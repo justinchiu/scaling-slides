@@ -217,7 +217,7 @@ We must overcome these issues when scaling HMMs
     \item[] \FancyUpArrow~Speed
     \end{itemize}
 \vspace{1em}
-\item Kernel-based generalized softmax
+\item Kernel-based generalized softmax for transitions
 \vspace{1em}
     \begin{itemize}
     \item[] \FancyUpArrow~Speed
@@ -227,18 +227,28 @@ We must overcome these issues when scaling HMMs
 
 \begin{frame}
 \frametitle{Technique 1: Neural Parameterization}
+For both the transition and emission matrices
+(Give dimensions)
 \begin{itemize}
-\item A neural parameterization allows for parameter sharing
-\item Generate conditional distributions from
-state $\mathbf{E}_z$ and token representations $\mathbf{E}_x$
+\item Nonlinear low-dimensional decomposition
+$$
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (2,2) node[pos=.5] {$X$};
+\end{tikzpicture}}}
+\propto
+\exp\left(\,
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$U$};
+\end{tikzpicture}}}
+\times 
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (2,1) node[pos=.5] {$V^\top$};
+\end{tikzpicture}}}
+\,\right)
+$$
+\item Fewer parameters than directly parameterizing $X$
+\item Can further parameterize $U = \textrm{MLP}(E_u)$
 \end{itemize}
-\begin{center}
-\includegraphics[height=1.7in]{img/blocksparse_mat_no_block.pdf}
-\end{center}
-
-REDO. picture should show $p(x \mid z) = \exp(L R^\top)$,
-generating L and R from neural networks
-
 \end{frame}
 
 \begin{frame}
