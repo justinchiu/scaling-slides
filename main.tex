@@ -49,38 +49,49 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
 
 \begin{frame}
 \frametitle{Latent Variables Models in NLP}
-Chicken and egg problem:
 \vspace{2em}
 \begin{itemize}
 \item NLP benchmarks are dominated by fully observed models
-\vspace{2em}
-\item Most tasks are fully supervised
-\vspace{2em}
-\item Evaluation of unsupervised tasks is also difficult
-\vspace{2em}
-\item Goal: Demonstrate efficacy of latent variable models by
-    making them competitive on an existing task
+\vspace{1em}
+    \begin{itemize}
+    \item Transformers
+    \vspace{1em}
+    \item Previously, Recurrent Neural Networks
+    \end{itemize}
+\vspace{1em}
+\item We instead explore latent variable models
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Latent Variable Models}
+\begin{itemize}
+\item Maintain uncertainty over latent representations
+\vspace{1em}
+\item Focus on models that admit tractable inference (say to avoid error due to
+    approximations during learning)
+\vspace{1em}
+\item Research question 1: Does uncertainty in the model improve performance?
+\vspace{1em}
+\item Research question 2: To what extent is the performance of tractable
+    latent variable models limited by scale and choices in parameterization?
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Language Modeling}
+To answer these questions, we focus on the task of language modeling
+\vspace{2em}
 \begin{itemize}
 \item Given the words seen so far, predict the next word
 \vspace{2em}
 \item Language requires modeling long-range phenomena
-\end{itemize}
-PICTURE
-\end{frame}
-
-\begin{frame}
-\frametitle{Research Question}
-\begin{itemize}
-\item How far can we scale simple latent variables models?
 \vspace{2em}
-\item Under the assumption that tasks will only be developed if models are
-    reasonably performant
+\item Focus on the smallest dataset, Penn Treebank,
+    and the simplest latent variable model
 \end{itemize}
+\vspace{2em}
+PICTURE
 \end{frame}
 
 \begin{frame}
@@ -91,25 +102,37 @@ PICTURE
 \item Are thought to be very poor language models
 \vspace{2em}
 \item We show they are better than previously thought once scaled
+\vspace{2em}
+    \begin{itemize}
+    \item But still not as performant as fully observed models
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
-\section{Background: HMMs}
+\section{Background: Hidden Markov Models}
+\begin{frame}
+\frametitle{Hidden Markov Models (HMMs)}
+\begin{itemize}
+\item Classical models for unsupervised tag induction in NLP
+\vspace{2em}
+\item 
+\end{itemize}
+\end{frame}
 
 \begin{frame}
-\frametitle{HMMs}
+\frametitle{Hidden Markov Models (HMMs)}
 
 For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 
 \begin{center}
 \begin{tikzpicture}[]
-\node[latent] (z0) {$z_0$} ;
-\node[latent] (z1) [right=1.25cm of z0] {$z_1$} ;
-\node[latent] (z2) [right=1.25cm of z1] {$z_2$} ;
+\node[latent] (z0) {$z_1$} ;
+\node[latent] (z1) [right=1.25cm of z0] {$z_2$} ;
+\node[latent] (z2) [right=1.25cm of z1] {$z_3$} ;
 
-\node[obs]    (x0) [below = 0.75cm of z0] {$x_0$};
-\node[obs]    (x1) [below = 0.75cm of z1] {$x_1$};
-\node[obs]    (x2) [below = 0.75cm of z2] {$x_2$};
+\node[obs]    (x0) [below = 0.75cm of z0] {$x_1$};
+\node[obs]    (x1) [below = 0.75cm of z1] {$x_2$};
+\node[obs]    (x2) [below = 0.75cm of z2] {$x_3$};
 
 \edge {z0} {x0};
 \edge {z1} {x1};
@@ -119,15 +142,16 @@ For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 \end{tikzpicture}
 \end{center}
 
-\begin{itemize}
-\item Joint distribution $p(x,z) = \prod_t p(x_t \mid z_t)p(z_t \mid z_{t-1})$
-\vspace{1em}
-\item Start vector $\pi\in[0,1]^{Z}$, with $[\pi]_{z_0} = p(z_0)$
-\vspace{1em}
-\item Transition matrix $A\in[0,1]^{Z \times Z},$ with $[A]_{z_{t-1},z_t} = p(z_t \mid z_{t-1})$
-\vspace{1em}
-\item Emission matrix $O\in[0,1]^{Z \times X}$, with $[O]_{z_t, x_t} = p(x_t \mid z_t)$
-\end{itemize}
+This yields the joint distribution $$p(x,z) = \prod_t p(x_t \mid z_t)p(z_t \mid z_{t-1}),$$
+with distributional parameters
+\begin{align*}
+&\textnormal{start vector } & \pi\in[0,1]^{Z},
+    & \textnormal{ with } &[\pi]_{z_0} &= p(z_0),\\
+&\textnormal{transition matrix } & A\in[0,1]^{Z \times Z},
+    & \textnormal{ with } &[A]_{z_{t-1},z_t} &= p(z_t \mid z_{t-1}),\\
+&\textnormal{emission matrix } & O\in[0,1]^{Z \times X},
+    & \textnormal{ with } &[O]_{z_t, x_t} &= p(x_t \mid z_t)\\
+\end{align*}
 \end{frame}
 
 \begin{frame}
@@ -136,17 +160,18 @@ Given observed $x = (x_1, \ldots, x_T)$
 \vspace{1em}
 We wish to maximize
 \begin{equation*}
-p(x) = \sum_{z_1}\cdots\sum_{z_T}p(x, z),
+p(x)
+= \sum_{z_1}\cdots\sum_{z_T}p(x, z)
+= \alpha_1^\top\Lambda_2\Lambda_3\cdots\Lambda_T\bm1,
 \end{equation*}
-computed via the forward algorithm
-\vspace{2em}
-\begin{itemize}
-\item Start $\alpha_1 = \pi [O]_{\cdot,x_1}$
-\item Transition operators $\Lambda_t = A\diag([O]_{\cdot,x_t})\in[0,1]^{Z \times Z}$
-\item Forward algorithm computes evidence
-$$p(x) = \underbrace{\alpha_1^\top\Lambda_2\Lambda_3}_{\alpha_3}\cdots\Lambda_T\bm1$$
-\item Each $[\alpha_t]_{z_t} = p(z_t, x_{\le t})$
-\end{itemize}
+where we have the
+\begin{align*}
+&\textnormal{start, } & \alpha_1 &= \pi [O]_{\cdot,x_1},\\
+&\textnormal{and transition operators, }
+    & \Lambda_t &= A\diag([O]_{\cdot,x_t})
+\end{align*}
+The result of each matvec has the alphas of the forward algorithm,
+i.e. $\alpha_3 = \alpha_1\Lambda_2\Lambda_3$ gives $p(z_3, x_{1:3})$
 \end{frame}
 
 %\begin{frame}
@@ -157,17 +182,7 @@ $$p(x) = \underbrace{\alpha_1^\top\Lambda_2\Lambda_3}_{\alpha_3}\cdots\Lambda_T\
 
 \begin{frame}
 \frametitle{Inference}
-\begin{columns}
-\begin{column}{0.5\textwidth}  %%<--- here
-\begin{itemize}
-    \item Nodes correspond to states
-    \vspace{2em}
-    \item Edges to entries in $\Lambda_t$
-    \vspace{2em}
-    \item Sequentially compute posterior state probabilities
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
+Given the start and transition operators, we can visualize inference
 \begin{figure}
 \begin{center}
 \resizebox{0.8\width}{0.8\height}{
@@ -175,8 +190,12 @@ $$p(x) = \underbrace{\alpha_1^\top\Lambda_2\Lambda_3}_{\alpha_3}\cdots\Lambda_T\
 }
 \end{center}
 \end{figure}
-\end{column}
-\end{columns}
+\vspace{-1em}
+\begin{itemize}
+    \item Each node corresponds to a state
+    %\vspace{1em}
+    \item Each edge to an entry in the transition operator matrix
+\end{itemize}
 \end{frame}
 
 \section{Scaling HMMs}
@@ -227,13 +246,11 @@ We must overcome these issues when scaling HMMs
 
 \begin{frame}
 \frametitle{Technique 1: Neural Parameterization}
-For both the transition and emission matrices
-(Give dimensions)
-\begin{itemize}
-\item Nonlinear low-dimensional decomposition
-$$
+For both the transition and emission matrices,
+we use a nonlinear low-dimensional decomposition
+\[
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,0) rectangle (2,2) node[pos=.5] {$X$};
+    \draw (0,0) rectangle (2,2) node[pos=.5] {$W$};
 \end{tikzpicture}}}
 \propto
 \exp\left(\,
@@ -245,9 +262,11 @@ $$
     \draw (0,0) rectangle (2,1) node[pos=.5] {$V^\top$};
 \end{tikzpicture}}}
 \,\right)
-$$
-\item Fewer parameters than directly parameterizing $X$
-\item Can further parameterize $U = \textrm{MLP}(E_u)$
+\]
+\begin{itemize}
+\item Fewer parameters than directly parameterizing $W$
+\item Can further parameterize $U$ or $V = \textrm{MLP}(E_u)$
+\item This particular parameterization does not affect inference
 \end{itemize}
 \end{frame}
 
@@ -256,12 +275,48 @@ $$
 \begin{itemize}
 \item State dropout encourages broad state usage
 \item At each batch, sample dropout mask $\mathbf{b} \in \set{0,1}^{Z}$
+\item Compute distributional parameters by indexing into embeddings $U,V$
+\begin{align*}
+\textnormal{Transition } A &\gets 
+\left(\,
+\mathbf{b} \circ \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$U_A$};
+\end{tikzpicture}}}
+\,\right)
+\times
+\left(\,
+\mathbf{b} \circ
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$V_A$};
+\end{tikzpicture}}}
+\,\right)^\top\\
+\textnormal{Emission } O &\gets 
+\left(\,
+\mathbf{b} \circ \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$U_O$};
+\end{tikzpicture}}}
+\,\right)
+\times
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$V_O$};
+\end{tikzpicture}}}
+^\top
+\end{align*}
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{State Dropout: Inference}
+The cost of inference is reduced by state dropout
 \begin{center}
-\resizebox{0.75\width}{0.75\height}{
-\input{img/trellis.tex}
+\resizebox{0.8\width}{0.8\height}{
+\input{img/trellis_full_drop.tex}
 }
 \end{center}
+\begin{itemize}
+\item Shaded nodes depict dropped states
+\item Ignore dropped states during inference
+\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -274,6 +329,10 @@ This slide sucks, redo
 \vspace{0.5em}
 \item Words can only be emit by states in the aligned group
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Block-Sparse Emission Constraints: Inference}
 \begin{center}
 \begin{tikzpicture}[every node/.style={anchor=base,minimum size=8mm}]
     \matrix  (graph) [matrix of nodes, row sep=0.5em,column sep=-0.3em,
@@ -330,7 +389,7 @@ This slide sucks, redo
 \end{frame}
 
 \begin{frame}
-\frametitle{Block-Sparse Emissions: Effect on Inference}
+\frametitle{Block-Sparse Emissions: Inference}
 
 Given each word $x_t$, only the states in the correct group can occur
 \vspace{1em} 
@@ -351,6 +410,34 @@ Given each word $x_t$, only the states in the correct group can occur
 \input{img/trellis_nodrop.tex}
 }
 \caption{Block-sparse emission}
+\end{subfigure}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Block-Sparse Emissions: Inference}
+
+Given each word $x_t$, only the states in the correct group can occur
+\vspace{1em} 
+
+\begin{figure}
+\captionsetup[subfigure]{justification=centering}
+\begin{center}
+\begin{subfigure}[t]{0.45\textwidth}
+\centering
+\resizebox{0.75\width}{0.75\height}{
+\input{img/trellis_nodrop.tex}
+}
+\caption{Block-sparse emission}
+\end{subfigure}
+\begin{subfigure}[t]{0.45\textwidth}
+\centering
+\resizebox{0.75\width}{0.75\height}{
+\input{img/trellis.tex}
+}
+\caption{With state dropout}
 \end{subfigure}
 \end{center}
 \end{figure}
