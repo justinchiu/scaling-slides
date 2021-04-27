@@ -196,6 +196,7 @@ The result of each matvec has the alphas of the forward algorithm,
 i.e. $\alpha_3 = \alpha_1\Lambda_2\Lambda_3$ has entries corresponding to $p(z_3, x_{1:3})$
 \end{frame}
 
+\begin{comment}
 \begin{frame}
 \frametitle{Transition Operators}
 skip slide? mainly to make the connection between distributional parameters
@@ -213,10 +214,12 @@ and inference really concrete.
 \end{align*}
 \end{itemize}
 \end{frame}
+\end{comment}
 
 \begin{frame}
 \frametitle{Inference}
 Given the start and transition operators, we can visualize inference
+$$p(x) = \alpha_1^\top\Lambda_2\cdots\Lambda_T\mathbf{1}$$
 \begin{figure}
 \begin{center}
 \resizebox{0.8\width}{0.8\height}{
@@ -344,14 +347,14 @@ with embeddings $U\in\R^{Z\times D}, V\in\R^{Z\times D}$ or $\R^{X \times D}$
 \[
 \left(\,
 \mathbf{b} \circ \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,0) rectangle (1,2) node[pos=.5] {$U_A$};
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$U_{\textnormal{trans}}$};
 \end{tikzpicture}}}
 \,\right)
 \times
 \left(\,
 \mathbf{b} \circ
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,0) rectangle (1,2) node[pos=.5] {$V_A$};
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$V_{\textnormal{trans}}$};
 \end{tikzpicture}}}
 \,\right)^\top
 \]
@@ -362,12 +365,12 @@ with embeddings $U\in\R^{Z\times D}, V\in\R^{Z\times D}$ or $\R^{X \times D}$
 \[
 \left(\,
 \mathbf{b} \circ \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,0) rectangle (1,2) node[pos=.5] {$U_O$};
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$U_{\textnormal{emit}}$};
 \end{tikzpicture}}}
 \,\right)
 \times
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,0) rectangle (1,2) node[pos=.5] {$V_O$};
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$V_{\textnormal{emit}}$};
 \end{tikzpicture}}}
 ^\top
 \]
@@ -403,7 +406,7 @@ The cost of inference is reduced by state dropout
 \end{frame}
 
 \begin{frame}
-\frametitle{Block-Sparse Emission Constraints: Inference}
+\frametitle{Block-Sparse Emission Constraints}
 \begin{itemize}
     \item Indices $m \in [M]$
     \item State partitions $\mcZ_m$
@@ -473,21 +476,32 @@ The cost of inference is reduced by state dropout
 %\end{tikzpicture}
 
 \begin{center}
-\resizebox{0.5\textwidth}{0.5\textheight}{
+\begin{figure}
+\scalebox{1}{
 \begin{tikzpicture}
-\draw [fill=black] (0,0) rectangle (9,4);
+%\draw [fill=black] (0,0) rectangle (8,4);
+
+\fill [gray] (0,0) rectangle (7,4);
 
 \fill [white] (0,4) rectangle (1,3);
-\fill [white] (1,3) rectangle (2,2);
-\fill [white] (2,2) rectangle (3,1);
-\fill [white] (3,2) rectangle (4,1);
-\fill [white] (4,1) rectangle (5,0);
-\fill [white] (5,3) rectangle (6,2);
-\fill [white] (6,3) rectangle (7,2);
-\fill [white] (7,4) rectangle (8,3);
-\fill [white] (8,3) rectangle (9,2);
+\fill [white] (1,3) rectangle (4,2);
+\fill [white] (4,2) rectangle (6,1);
+\fill [white] (6,1) rectangle (7,0);
+
+\draw [thick] (0,0) rectangle (7,4);
+
+\node at (-.5, 3.5) {$\mcZ_1$};
+\node at (-.5, 2.5) {$\mcZ_2$};
+\node at (-.5, 1.5) {$\mcZ_3$};
+\node at (-.5, .5) {$\mcZ_4$};
+
+\node at (.5, -.5) {$\mcX_1$};
+\node at (2.5, -.5) {$\mcX_2$};
+\node at (5, -.5) {$\mcX_3$};
+\node at (6.5, -.5) {$\mcX_4$};
 \end{tikzpicture}
 }
+\end{figure}
 \end{center}
 
 \end{frame}
@@ -548,67 +562,6 @@ Given each word $x_t$, only the states in the correct group can occur
 \end{center}
 \end{figure}
 
-\end{frame}
-
-\begin{frame}
-\frametitle{Technique 4: Generalized Softmax}
-Focusing on the transition distribution,
-\vspace{1em}
-\begin{itemize}
-\item Softmax
-$$p(z_t \mid z_{t-1}) = \frac{\exp(\bu_{z_{t-1}}^\top \bv_{z_{t}})}
-{\sum_z \exp(\bu_{z_{t-1}}^\top \bv_z)}$$
-\vspace{1em}
-\item Generalized Softmax
-$$p(z_t \mid z_{t-1})
-= \frac{K(\bu, \bv)}{\sum_z K(\bu,\bv_z)}
-= \frac{\phi(\bu)^\top\phi(\bv)}
-    {\sum_z \phi(\bu)^\top\phi(\bv_z)},$$
-for positive kernel $K:\R^d\times\R^d\to\R_+$
-and feature map $\phi:\R^d\to\R^f$
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Generalized Softmax: Inference}
-\begin{itemize}
-\item The key $O(Z^2)$ step in the forward algorithm:
-$$
-p(z_t \mid x_{<t}) = \sum_{z_{t-1}} p(z_t \mid z_{t-1})p(z_{t-1} \mid x_{<t})
-$$
-\vspace{1em}
-\item In matrix form, 
-\begin{equation*}
-\bm\gamma_t = \underbrace{\bm\alpha_{t-1}}_{\R^Z}\underbrace{\Lambda_{}}_{\R^{Z \times Z}},
-\end{equation*}
-where we have the probability of the
-\begin{align*}
-&\textnormal{current state, } & [\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t}),\\
-&\textnormal{last state, } & [\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t}),\\
-&\textnormal{transition probability, } & [\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
-\end{align*}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Generalized Softmax: Inference}
-\begin{itemize}
-\item Use generalized softmax in transition distribution
-$$[\Lambda]_{z_{t-1},z_t} = p(z_t\mid z_{t-1}) \propto \phi(\bu_{z_{t-1}})^\top\phi(\bv_{z_t})$$
-\item Allows us to apply associative property of matrix multiplication
-\begin{align*}
-\bm\gamma_t
-&= \bm\alpha_{t-1}\Lambda\\
-&= \bm\alpha_{t-1}(\textrm{diag}(d)\phi(U)\phi(V)^\top)\\
-&= \underbrace{(\bm\alpha_{t-1}\circ d)}_{\R^Z}
-\underbrace{\phi(U)}_{\R^{Z \times f}}
-\underbrace{\phi(V)^\top}_{\R^{f \times Z}},
-\end{align*}
-with stacked embeddings $\phi(U),\phi(V) = [\phi(\bv_1), \ldots,\phi(\bv_Z)]$
-and normalizing constants $d$
-\vspace{1em}
-\item Takes $O(Zf)$ time from left to right!
-\end{itemize}
 \end{frame}
 
 
@@ -713,6 +666,71 @@ VL-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
 \end{tabular}
 \end{center}
 \end{frame}
+
+\section{Speeding up HMMs without Sparsity}
+
+\begin{frame}
+\frametitle{Generalized Softmax}
+Focusing on the transition distribution,
+\vspace{1em}
+\begin{itemize}
+\item Softmax
+$$p(z_t \mid z_{t-1}) = \frac{\exp(\bu_{z_{t-1}}^\top \bv_{z_{t}})}
+{\sum_z \exp(\bu_{z_{t-1}}^\top \bv_z)}$$
+\vspace{1em}
+\item Generalized Softmax
+$$p(z_t \mid z_{t-1})
+= \frac{K(\bu, \bv)}{\sum_z K(\bu,\bv_z)}
+= \frac{\phi(\bu)^\top\phi(\bv)}
+    {\sum_z \phi(\bu)^\top\phi(\bv_z)},$$
+for positive kernel $K:\R^d\times\R^d\to\R_+$
+and feature map $\phi:\R^d\to\R^f$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Generalized Softmax: Inference}
+\begin{itemize}
+\item The key $O(Z^2)$ step in the forward algorithm:
+$$
+p(z_t \mid x_{<t}) = \sum_{z_{t-1}} p(z_t \mid z_{t-1})p(z_{t-1} \mid x_{<t})
+$$
+\vspace{1em}
+\item In matrix form, 
+\begin{equation*}
+\bm\gamma_t = \underbrace{\bm\alpha_{t-1}}_{\R^Z}\underbrace{\Lambda_{}}_{\R^{Z \times Z}},
+\end{equation*}
+where we have the probability of the
+\begin{align*}
+&\textnormal{current state, } & [\bm\gamma_{t}]_{z_{t}} &= p(z_{t} \mid x_{< t}),\\
+&\textnormal{last state, } & [\bm\alpha_{t-1}]_{z_{t-1}} &= p(z_{t-1} \mid x_{< t}),\\
+&\textnormal{transition probability, } & [\Lambda]_{z_{t-1},z_t} &= p(z_t\mid z_{t-1})
+\end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Generalized Softmax: Inference}
+\begin{itemize}
+\item Use generalized softmax in transition distribution
+$$[\Lambda]_{z_{t-1},z_t} = p(z_t\mid z_{t-1}) \propto \phi(\bu_{z_{t-1}})^\top\phi(\bv_{z_t})$$
+\item Allows us to apply associative property of matrix multiplication
+\begin{align*}
+\bm\gamma_t
+&= \bm\alpha_{t-1}\Lambda\\
+&= \bm\alpha_{t-1}(\textrm{diag}(d)\phi(U)\phi(V)^\top)\\
+&= \underbrace{(\bm\alpha_{t-1}\circ d)}_{\R^Z}
+\underbrace{\phi(U)}_{\R^{Z \times f}}
+\underbrace{\phi(V)^\top}_{\R^{f \times Z}},
+\end{align*}
+with stacked embeddings $\phi(U),\phi(V) = [\phi(\bv_1), \ldots,\phi(\bv_Z)]$
+and normalizing constants $d$
+\vspace{1em}
+\item Takes $O(Zf)$ time from left to right!
+\end{itemize}
+\end{frame}
+
+\section{Experiments}
 
 \begin{frame}
 \frametitle{Experiments}
@@ -860,6 +878,8 @@ with learned $W\in\R^{d \times f}$
     %\item Currently running that plus larger state sizes
 \end{itemize}
 \end{frame}
+
+
 
 \begin{frame}
 \frametitle{Conclusion}
