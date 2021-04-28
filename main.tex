@@ -290,7 +290,7 @@ We must overcome these issues when scaling HMMs
 \vspace{2em}
 \item Causes the number of parameters to explode as the state size increases
 \vspace{2em}
-\item We instead use a low-dimensional factorization of all conditional distributions
+\item We instead use a low-dimensional decomposition of all conditional distributions
     that greatly reduces the number of parameters
 \end{itemize}
 \end{frame}
@@ -600,6 +600,31 @@ Given each word $x_t$, only the states in the correct group can occur
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Method Recap}
+\begin{itemize}
+\item Compact neural parameterization
+\vspace{1em}
+    \begin{itemize}
+    \item[] \FancyUpArrow~Generalization
+    \end{itemize}
+\vspace{1em}
+\item State dropout
+\vspace{1em}
+    \begin{itemize}
+    \item[] \FancyUpArrow~Speed \quad \FancyUpArrow~Generalization
+    \end{itemize}
+\vspace{1em}
+\item Block-sparse emission constraints
+\vspace{1em}
+    \begin{itemize}
+    \item[] \FancyUpArrow~Speed
+    \end{itemize}
+\vspace{1em}
+\item A fourth after experiments
+\end{itemize}
+\end{frame}
+
 
 \section{Experiments}
 \begin{frame}
@@ -698,6 +723,7 @@ Model                 & Param & Train & Val\\
 VL-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
 \quad - neural param  & 423M & 119    & 169 \\
 \quad - state dropout & 7.2M & 88     & 157 \\
+%\quad + uniform partition & 7.2M & 83     & 145 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -769,7 +795,7 @@ which take $O(Z^2)$ computation
     \vspace{1em}
     \item Fast Fourier Transform ($Z \log Z$)
     \vspace{1em}
-    \item Low-Rank factorization ($ZR$)
+    \item Low-Rank decomposition ($ZR$)
     \end{itemize}
 \vspace{2em}
 \item We utilize low-rank decompositions
@@ -777,11 +803,11 @@ which take $O(Z^2)$ computation
 \end{frame}
 
 \begin{frame}
-\frametitle{Low-Rank Decomposition}
+\frametitle{Low-Rank Factorization}
 Factor transition matrix $A$ into product of skinny matrices
 \[
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,1.5) rectangle (1,2) node[pos=.5] {$\alpha^\top$};
+    \draw (0,0) rectangle (1,.5) node[pos=.5] {$\alpha^\top$};
 \end{tikzpicture}}}
 \times
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
@@ -789,7 +815,7 @@ Factor transition matrix $A$ into product of skinny matrices
 \end{tikzpicture}}}
 =
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,1.5) rectangle (1,2) node[pos=.5] {$\alpha^\top$};
+    \draw (0,0) rectangle (1,.5) node[pos=.5] {$\alpha^\top$};
 \end{tikzpicture}}}
 \times
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
@@ -800,13 +826,107 @@ Factor transition matrix $A$ into product of skinny matrices
     \draw (0,0) rectangle (2,1) node[pos=.5] {$V^\top$};
 \end{tikzpicture}}}
 \]
+resulting in two matrix-vector products of cost $O(ZR)$ each
+\vspace{1em}
 \begin{itemize}
 \item Constraint: Entries of $A$ must be nonnegative
 \vspace{1em}
-\item Solution: Use a nonnegative decomposition
+\item Solution: Use a nonnegative matrix factorization (NMF)
 $$A = \phi(U)\phi(V)^\top,$$
 with $\phi:\R^D\to\R_+$
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Method Recap}
+\begin{itemize}
+\item Target key $O(Z^2)$ matvec step in inference
+\vspace{2em}
+\item Use NMF to reduce cost to $O(ZR)$
+\vspace{2em}
+\item How small can $R$ be relative to $Z$ without sacrificing accuracy?
+\end{itemize}
+\end{frame}
+
+
+\section{Experiments}
+
+\begin{frame}
+\frametitle{Experiments}
+\begin{itemize}
+\item Language modeling on PTB
+\vspace{2em}
+\item Feature map $\phi(\bx) = \exp\left(W\bx\right)$,
+with learned $W\in\R^{D \times R}$
+\vspace{2em}
+\item No sparsity constraints
+\end{itemize}
+\end{frame}
+
+\begin{comment}
+\begin{frame}
+\frametitle{Asdf}
+\begin{center}
+\begin{figure}
+\begin{subfigure}{0.49\textwidth}
+    \includegraphics[width=\textwidth]{img/lhmm-states-features.png}
+\end{subfigure}
+\begin{subfigure}{0.49\textwidth}
+    \includegraphics[width=\textwidth]{img/lhmm-states-features-dropout.png}
+\end{subfigure}
+\end{figure}
+\end{center}
+\end{frame}
+\end{comment}
+
+\begin{frame}
+\frametitle{Asdf}
+\begin{center}
+\begin{figure}
+\includegraphics[width=\textwidth]{img/lhmm-states-features.png}
+\end{figure}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Asdf}
+\begin{center}
+\begin{figure}
+\includegraphics[width=\textwidth]{img/lhmm-states-features-dropout.png}
+\end{figure}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Asdf}
+\begin{center}
+\begin{figure}
+\includegraphics[width=\textwidth]{img/lhmm-states-features-speed.png}
+\end{figure}
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Conclusion}
+\begin{itemize}
+\item Hopeful that HMMs can be competitive language models
+\vspace{2em}
+\item Introduced 4 techniques for tackling speed and overfitting
+\vspace{2em}
+\item Future work will extend to other discrete latent variable models
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{EOS}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Citations}
+\bibliographystyle{acl_natbib}
+\bibliography{anthology,emnlp2020}
 \end{frame}
 
 \begin{frame}
@@ -868,177 +988,5 @@ and normalizing constants $d$
 \end{itemize}
 \end{frame}
 
-\section{Experiments}
-
-\begin{frame}
-\frametitle{Experiments}
-\begin{itemize}
-\item Language modeling on PTB
-\vspace{2em}
-\item Work directly with feature map $\phi(\bx) = \exp\left(W\bx - \frac{\|x\|^2}{2}\right)$,
-with learned $W\in\R^{d \times f}$
-\vspace{2em}
-\item No dropout or sparsity constraints
-\end{itemize}
-\end{frame}
-
-\begin{comment}
-\begin{frame}
-\frametitle{Results on PTB Validation}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    xlabel=Number of features $f$,
-    ylabel=Validation PPL,
-    xmode=log,
-    log basis x={2},
-    xtick={},
-    tick pos=left,
-    width=7cm,
-    height=5cm,
-    legend pos=outer north east
-]
-\addplot plot coordinates {
-(1024,  163)
-(2048,  163)
-(4096,  157)
-(8192,  156)
-};
-\addplot plot coordinates {
-(1024,  167)
-(2048,  162)
-(4096,  162)
-(8192,  155)
-};
-\legend{$Z=16k$,$Z=8k$}
-\end{axis}
-\end{tikzpicture}
-\end{frame}
-\end{comment}
-
-\begin{comment}
-\begin{frame}
-\frametitle{Results on PTB Validation}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    xlabel=Number of features $f$,
-    ylabel=Validation PPL,
-    xmode=log,
-    log basis x={2},
-    xtick={},
-    tick pos=left,
-    width=7cm,
-    height=5cm,
-    legend pos=outer north east
-]
-\addplot plot coordinates {
-(128,  186)
-(256,  180)
-(512,  177)
-(1024,  163)
-};
-\addplot plot coordinates {
-(128,  195)
-(256,  182)
-(512,  177)
-(1024,  166)
-};
-\addplot plot coordinates {
-(128,  192)
-(256,  180)
-(512,  179)
-(1024,  177)
-};
-\legend{$Z=4k$,$Z=2k$,$Z=1k$}
-\end{axis}
-\end{tikzpicture}
-\end{frame}
-\end{comment}
-
-\begin{frame}
-\frametitle{Results on PTB Validation}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    xlabel=Number of states $Z$,
-    ylabel=Validation PPL,
-    xmode=log,
-    log basis x={2},
-    xtick=data,
-    xticklabels={1024,2048,4096,8192},
-    tick pos=left,
-    width=7cm,
-    height=5cm,
-    legend pos=outer north east
-]
-\addplot plot coordinates {
-(1024,  182)
-(2048,  172)
-(4096,  165)
-(8192,  160)
-};
-\addplot plot coordinates {
-(1024,  177)
-(2048,  166)
-(4096,  163)
-(8192,  164)
-};
-\addplot plot coordinates {
-(1024,  179)
-(2048,  177)
-(4096,  177)
-(8192,  168)
-};
-\addplot plot coordinates {
-(1024,  180)
-(2048,  182)
-(4096,  180)
-(8192,  177)
-};
-%\addplot plot coordinates {
-%(1024,  192)
-%(2048,  195)
-%(4096,  186)
-%(8192,  191)
-%};
-\legend{softmax,$f=1024$,$f=512$,$f=256$}
-%\legend{softmax,$f=1024$,$f=512$,$f=256$,$f=128$}
-\end{axis}
-\end{tikzpicture}
-\vspace{1em}
-\begin{itemize}
-    \item Holding number of features fixed, perplexity mostly improves
-        or remains the same with an increasing number of states
-    \item Achieve similar performance as softmax with around 4:1 state to feature ratio
-        (also holds for 8k and 16k states)
-    %\item Results are a bit noisy, hoping dropout will clean things up
-    %\item Currently running that plus larger state sizes
-\end{itemize}
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Conclusion}
-\begin{itemize}
-\item Hopeful that HMMs can be competitive language models
-\vspace{2em}
-\item Introduced 4 techniques for tackling speed and overfitting
-\vspace{2em}
-\item Future work will extend to other discrete latent variable models
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{EOS}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Citations}
-\bibliographystyle{acl_natbib}
-\bibliography{anthology,emnlp2020}
-\end{frame}
 
 \end{document}
