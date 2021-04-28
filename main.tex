@@ -412,6 +412,9 @@ with embeddings $U\in\R^{Z\times D}, V\in\R^{Z\times D}$ or $\R^{X \times D}$
 \vspace{2em}
 \item Only allow each word to be emit by a subset of states
 \vspace{2em}
+\item Emission sparsity induces sparsity in transition operators (not the transition
+    matrix)
+\vspace{2em}
 \item Cost of inference is quadratic in the size of the largest subset
     due to sparsity
 \end{itemize}
