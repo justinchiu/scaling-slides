@@ -80,11 +80,19 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
 \frametitle{Research Question}
 To what extent is the performance of tractable
 latent variable models limited by scale and choices in parameterization?
+
+\vspace{2em}
+
+\textbf{This work:} Scale hidden Markov models (HMMs) on
+language modeling using techniques
+drawn from recent advances in neural networks
 \end{frame}
 
 \begin{frame}
 \frametitle{Language Modeling}
-To answer this question, we focus on the task of language modeling
+\begin{center}
+\textrm{\large How now, brown \rule{1cm}{0.15mm}}
+\end{center}
 \vspace{2em}
 \begin{itemize}
 \item Given the words seen so far, predict the next word
@@ -92,9 +100,6 @@ To answer this question, we focus on the task of language modeling
 \item Language requires modeling long-range phenomena
 \end{itemize}
 \vspace{2em}
-\begin{center}
-\textrm{\large How now, brown \rule{1cm}{0.15mm}}
-\end{center}
 \end{frame}
 
 \begin{frame}
@@ -112,7 +117,7 @@ To answer this question, we focus on the task of language modeling
 \begin{frame}
 \frametitle{Hidden Markov Models (HMMs)}
 \begin{itemize}
-\item Classical models for unsupervised per-word tag induction in NLP
+\item Classical models for unsupervised per-word tag induction
 \vspace{1em}
     \begin{itemize}
     \item Part-of-speech induction
@@ -120,13 +125,14 @@ To answer this question, we focus on the task of language modeling
     \item Word alignment for translation
     \end{itemize}
 \vspace{1em}
-\item Generative model separates temporal dynamics from emissions
+\item Admits tractable exact inference
 \vspace{1em}
     \begin{itemize}
-    \item First picks a sequence of latent states
+    \item Strong conditional independence assumptions
     \vspace{1em}
-    \item Emits words given only the corresponding state
+    \item Finite set of discrete latent states
     \end{itemize}
+    % remove confound of approximate inference
 \end{itemize}
 \end{frame}
 
@@ -171,6 +177,7 @@ with
 &\textnormal{transitions } & p(z_t \mid z_{t-1})&,\\
 &\textnormal{and emissions } &  p(x_t \mid z_t)&
 \end{align*}
+represented as vectors and matrices
 
 \end{frame}
 
@@ -218,7 +225,7 @@ and inference really concrete.
 
 \begin{frame}
 \frametitle{Inference}
-Given the start and transition operators, we can visualize inference
+%Given the start and transition operators, we can visualize inference
 $$p(x) = \alpha_1^\top\Lambda_2\cdots\Lambda_T\mathbf{1}$$
 \begin{figure}
 \begin{center}
@@ -279,7 +286,7 @@ We must overcome these issues when scaling HMMs
 \begin{frame}
 \frametitle{Technique 1: Neural Parameterization}
 \begin{itemize}
-\item The transition $A$ and emission $O$ matrices have $Z^2$ and $ZX$ entries
+\item The transition and emission matrices have $Z^2$ and $ZX$ entries
 \vspace{2em}
 \item Causes the number of parameters to explode as the state size increases
 \vspace{2em}
@@ -289,9 +296,10 @@ We must overcome these issues when scaling HMMs
 \end{frame}
 
 \begin{frame}
-\frametitle{Neural Parameterization}
+\frametitle{Neural Parameterization: Softmax}
 For both the transition and emission matrices,
-we use a nonlinear $D$-dimensional decomposition
+we use a softmax parameterization,
+which assumes a nonlinear $D$-dimensional decomposition
 \vspace{1em}
 \[
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
@@ -382,7 +390,7 @@ with embeddings $U\in\R^{Z\times D}, V\in\R^{Z\times D}$ or $\R^{X \times D}$
 
 \begin{frame}
 \frametitle{State Dropout: Inference}
-The cost of inference is reduced by state dropout
+%The cost of inference is reduced by state dropout
 \begin{center}
 \resizebox{0.8\width}{0.8\height}{
 \input{img/trellis_full_drop.tex}
@@ -401,17 +409,32 @@ The cost of inference is reduced by state dropout
 \vspace{2em}
 \item Only allow each word to be emit by a subset of states
 \vspace{2em}
-\item Obtain an alignment by partitioning words and states jointly
+\item Cost of inference is quadratic in the size of the largest subset
+    due to sparsity
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Block-Sparse Emission Constraints}
-\begin{itemize}
-    \item Indices $m \in [M]$
-    \item State partitions $\mcZ_m$
-    \item Word partitions $\mcX_m$
-\end{itemize}
+\frametitle{Block-Sparse Emission Constraints: Alignment}
+Start with a joint partitioning of both states and wards
+\vspace{2em}
+
+\centering
+\begin{columns}
+\begin{column}{0.33\textwidth}
+\centering
+Indices $m \in [M]$
+\end{column}
+\begin{column}{0.33\textwidth}
+\centering
+State partitions $\mcZ_m$
+\end{column}
+\begin{column}{0.33\textwidth}
+\centering
+Word partitions $\mcX_m$
+\end{column}
+\end{columns}
+
 \begin{center}
 \begin{tikzpicture}[every node/.style={anchor=base,minimum size=8mm}]
     \matrix  (graph) [matrix of nodes, row sep=0.5em,column sep=-0.3em,
@@ -471,10 +494,12 @@ The cost of inference is reduced by state dropout
 
 \begin{frame}
 \frametitle{Block-Sparse Emission Constraints}
-%\begin{tikzpicture}
-%\draw (0,0) rectangle (4,4) node[pos=.5] {$O$};
-%\end{tikzpicture}
 
+Given the unnormalized emission logit matrix,
+\begin{itemize}
+    \item Mask out state-word entries in matrix
+    \item Normalize rows across words in aligned partition
+\end{itemize}
 \begin{center}
 \begin{figure}
 \scalebox{1}{
@@ -483,22 +508,33 @@ The cost of inference is reduced by state dropout
 
 \fill [gray] (0,0) rectangle (7,4);
 
-\fill [white] (0,4) rectangle (1,3);
-\fill [white] (1,3) rectangle (4,2);
-\fill [white] (4,2) rectangle (6,1);
-\fill [white] (6,1) rectangle (7,0);
+\draw [fill=white] (0,4) rectangle (1,3);
+\draw [fill=white] (1,3) rectangle (4,2);
+\draw [fill=white] (4,2) rectangle (6,1);
+\draw [fill=white] (6,1) rectangle (7,0);
 
 \draw [thick] (0,0) rectangle (7,4);
 
-\node at (-.5, 3.5) {$\mcZ_1$};
-\node at (-.5, 2.5) {$\mcZ_2$};
-\node at (-.5, 1.5) {$\mcZ_3$};
-\node at (-.5, .5) {$\mcZ_4$};
+%\node at (-.5, 3.5) {$\mcZ_1$};
+%\node at (-.5, 2.5) {$\mcZ_2$};
+%\node at (-.5, 1.5) {$\mcZ_3$};
+%\node at (-.5, .5) {$\mcZ_4$};
 
-\node at (.5, -.5) {$\mcX_1$};
-\node at (2.5, -.5) {$\mcX_2$};
-\node at (5, -.5) {$\mcX_3$};
-\node at (6.5, -.5) {$\mcX_4$};
+%\node at (.5, -.5) {$\mcX_1$};
+%\node at (2.5, -.5) {$\mcX_2$};
+%\node at (5, -.5) {$\mcX_3$};
+%\node at (6.5, -.5) {$\mcX_4$};
+
+\draw[decorate,decoration={brace,mirror},xshift=-0.25em] (0,3.9) -- (0,3.1) node[midway,xshift=-1em] {$\mcZ_1$};
+\draw[decorate,decoration={brace,mirror},xshift=-0.25em] (0,2.9) -- (0,2.1) node[midway,xshift=-1em] {$\mcZ_2$};
+\draw[decorate,decoration={brace,mirror},xshift=-0.25em] (0,1.9) -- (0,1.1) node[midway,xshift=-1em] {$\mcZ_3$};
+\draw[decorate,decoration={brace,mirror},xshift=-0.25em] (0,.9) -- (0,.1) node[midway,xshift=-1em] {$\mcZ_4$};
+
+\draw[decorate,decoration={brace,mirror},yshift=-0.25em] (.1,0) -- (.9,0) node[midway,yshift=-1em] {$\mcX_1$};
+\draw[decorate,decoration={brace,mirror},yshift=-0.25em] (1.1,0) -- (3.9,0) node[midway,yshift=-1em] {$\mcX_2$};
+\draw[decorate,decoration={brace,mirror},yshift=-0.25em] (4.1,0) -- (5.9,0) node[midway,yshift=-1em] {$\mcX_3$};
+\draw[decorate,decoration={brace,mirror},yshift=-0.25em] (6.1,0) -- (6.9,0) node[midway,yshift=-1em] {$\mcX_4$};
+
 \end{tikzpicture}
 }
 \end{figure}
@@ -667,12 +703,114 @@ VL-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
 \end{center}
 \end{frame}
 
-\section{Speeding up HMMs without Sparsity}
+\begin{frame}
+\frametitle{Discussion}
+\begin{itemize}
+\item Greatly scaled the state size of HMMs
+\vspace{2em}
+\item Performance improved with increasing state size
+\vspace{2em}
+\item Still a large gap between RNNs and HMMs
+\vspace{2em}
+\item Does the emission sparsity constraint improve
+    computation complexity at the price of accuracy?
+\end{itemize}
+\end{frame}
+
+
+\section{Speeding up HMMs with Low-Rank Decompositions}
+
+\begin{frame}
+\frametitle{Fast Inference with Low-Rank Decompositions}
+\begin{itemize}
+\item The previous approach relied a pre-specified emission sparsity constraint
+\vspace{2em}
+\item Can we scale inference with a weaker constraint?
+\vspace{2em}
+\item Exploit structure in the transition matrix to speed up inference
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+Start by unpacking inference to reveal the most expensive step
+
+$$p(x) = \alpha_1^\top\Lambda_2\Lambda_3\cdots\Lambda_T\mathbf{1}$$
+with
+\begin{align*}
+&\textnormal{start, } & [\alpha_1]_{z_1} &= p(x_1\mid z_1)p(z_1),\\
+&\textnormal{and transition operators, }
+    & [\Lambda_t]_{z_{t-1},z_t} &= p(x_t \mid z_t)p(z_t \mid z_{t-1})
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+Decompose transition operators into transition matrix $A$ and emission matrix $O$
+\begin{align*}
+p(x) &= \alpha_1^\top\Lambda_2\cdot\Lambda_T\mathbf{1}\\
+&= \alpha_1^\top (A \diag([O]_{\cdot,x_2}))  \cdots\Lambda_T\mathbf{1}\\
+&= \alpha_1^\top A \diag([O]_{\cdot,x_2}) \cdots A \diag([O]_{\cdot,x_T}) \mathbf{1}
+\end{align*}
+where the most expensive steps are the matrix-vector products $\alpha_t^\top A$,
+which take $O(Z^2)$ computation
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fast Matrix-Vector Products}
+\begin{itemize}
+\item Goal is to reduce the naive matvec complexity of $O(Z^2)$
+\vspace{2em}
+\item Various methods
+    \vspace{1em}
+    \begin{itemize}
+    \item Sparsity (nnz entries)
+    \vspace{1em}
+    \item Fast Fourier Transform ($Z \log Z$)
+    \vspace{1em}
+    \item Low-Rank factorization ($ZR$)
+    \end{itemize}
+\vspace{2em}
+\item We utilize low-rank decompositions
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Low-Rank Decomposition}
+Factor transition matrix $A$ into product of skinny matrices
+\[
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,1.5) rectangle (1,2) node[pos=.5] {$\alpha^\top$};
+\end{tikzpicture}}}
+\times
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (2,2) node[pos=.5] {$A$};
+\end{tikzpicture}}}
+=
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,1.5) rectangle (1,2) node[pos=.5] {$\alpha^\top$};
+\end{tikzpicture}}}
+\times
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (1,2) node[pos=.5] {$U$};
+\end{tikzpicture}}}
+\times 
+\vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
+    \draw (0,0) rectangle (2,1) node[pos=.5] {$V^\top$};
+\end{tikzpicture}}}
+\]
+\begin{itemize}
+\item Constraint: Entries of $A$ must be nonnegative
+\vspace{1em}
+\item Solution: Use a nonnegative decomposition
+$$A = \phi(U)\phi(V)^\top,$$
+with $\phi:\R^D\to\R_+$
+\end{itemize}
+\end{frame}
 
 \begin{frame}
 \frametitle{Generalized Softmax}
-Focusing on the transition distribution,
-\vspace{1em}
 \begin{itemize}
 \item Softmax
 $$p(z_t \mid z_{t-1}) = \frac{\exp(\bu_{z_{t-1}}^\top \bv_{z_{t}})}
@@ -683,8 +821,8 @@ $$p(z_t \mid z_{t-1})
 = \frac{K(\bu, \bv)}{\sum_z K(\bu,\bv_z)}
 = \frac{\phi(\bu)^\top\phi(\bv)}
     {\sum_z \phi(\bu)^\top\phi(\bv_z)},$$
-for positive kernel $K:\R^d\times\R^d\to\R_+$
-and feature map $\phi:\R^d\to\R^f$
+for positive kernel $K:\R^D\times\R^D\to\R_+$
+and feature map $\phi:\R^D\to\R^R$
 \end{itemize}
 \end{frame}
 
