@@ -199,8 +199,11 @@ where we have the
 &\textnormal{and transition operators, }
     & [\Lambda_t]_{z_{t-1},z_t} &= p(x_t \mid z_t)p(z_t \mid z_{t-1})
 \end{align*}
-The result of each matvec has the alphas of the forward algorithm,
+The result of each matvec gives the alphas of the forward algorithm,
 i.e. $\alpha_3 = \alpha_1\Lambda_2\Lambda_3$ has entries corresponding to $p(z_3, x_{1:3})$
+
+\vspace{1em}
+Requires $O(TZ^2)$ operations in total!
 \end{frame}
 
 \begin{comment}
@@ -805,7 +808,7 @@ which take $O(Z^2)$ computation
 
 \begin{frame}
 \frametitle{Low-Rank Factorization}
-Factor transition matrix $A$ into product of skinny matrices
+Factor transition matrix $A\in[0,1]{Z\times Z}$ into product of matrices $U,V\in\R^{Z \times R}$
 \[
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
     \draw (0,0) rectangle (1,.5) node[pos=.5] {$\alpha^\top$};
@@ -834,7 +837,7 @@ resulting in two matrix-vector products of cost $O(ZR)$ each
 \vspace{1em}
 \item Solution: Use a nonnegative matrix factorization (NMF)
 $$A = \phi(U)\phi(V)^\top,$$
-with $\phi:\R^{D\times R}\to\R_+^{D}$
+with $\phi:\R^{Z \times R}\to\R_+^{Z \times R}$
 \end{itemize}
 \end{frame}
 
@@ -857,8 +860,8 @@ with $\phi:\R^{D\times R}\to\R_+^{D}$
 \begin{itemize}
 \item Language modeling on PTB
 \vspace{2em}
-\item Feature map $\phi(\bx) = \exp\left(W\bx\right)$,
-with learned $W\in\R^{D \times R}$
+\item Feature map $\phi(U) = \exp\left(U W\right)$,
+with learned $W\in\R^{R \times R}$
 \vspace{2em}
 \item No sparsity constraints
 \end{itemize}
