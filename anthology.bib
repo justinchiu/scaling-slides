@@ -1,3 +1,14 @@
+@article{dropout,
+  author  = {Nitish Srivastava and Geoffrey Hinton and Alex Krizhevsky and Ilya Sutskever and Ruslan Salakhutdinov},
+  title   = {Dropout: A Simple Way to Prevent Neural Networks from Overfitting},
+  journal = {Journal of Machine Learning Research},
+  year    = {2014},
+  volume  = {15},
+  number  = {56},
+  pages   = {1929-1958},
+  url     = {http://jmlr.org/papers/v15/srivastava14a.html}
+}
+
 @article{kim2019cpcfg,
   author    = {Yoon Kim and
                Chris Dyer and
@@ -627,4 +638,83 @@ numpages = {8}
   timestamp = {Mon, 13 Aug 2018 16:47:02 +0200},
   biburl    = {https://dblp.org/rec/journals/corr/abs-1802-04799.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article {clonedgraphs,
+	Title = {Clone-structured graph representations enable flexible learning and vicarious evaluation of cognitive maps},
+	Author = {George, Dileep and Rikhye, Rajeev V and Gothoskar, Nishad and Guntupalli, J Swaroop and Dedieu, Antoine and Lázaro-Gredilla, Miguel},
+	DOI = {10.1038/s41467-021-22559-5},
+	Number = {1},
+	Volume = {12},
+	Month = {April},
+	Year = {2021},
+	Journal = {Nature communications},
+	ISSN = {2041-1723},
+	Pages = {2392},
+	Abstract = {Cognitive maps are mental representations of spatial and conceptual relationships in an environment, and are critical for flexible behavior. To form these abstract maps, the hippocampus has to learn to separate or merge aliased observations appropriately in different contexts in a manner that enables generalization and efficient planning. Here we propose a specific higher-order graph structure, clone-structured cognitive graph (CSCG), which forms clones of an observation for different contexts as a representation that addresses these problems. CSCGs can be learned efficiently using a probabilistic sequence model that is inherently robust to uncertainty. We show that CSCGs can explain a variety of cognitive map phenomena such as discovering spatial relations from aliased sensations, transitive inference between disjoint episodes, and formation of transferable schemas. Learning different clones for different contexts explains the emergence of splitter cells observed in maze navigation and event-specific responses in lap-running experiments. Moreover, learning and inference dynamics of CSCGs offer a coherent explanation for disparate place cell remapping phenomena. By lifting aliased observations into a hidden space, CSCGs reveal latent modularity useful for hierarchical abstraction and planning. Altogether, CSCG provides a simple unifying framework for understanding hippocampal function, and could be a pathway for forming relational abstractions in artificial intelligence.},
+	URL = {https://doi.org/10.1038/s41467-021-22559-5},
+}
+
+@inproceedings{dmc,
+author = {Siddiqi, Sajid M. and Moore, Andrew W.},
+title = {Fast Inference and Learning in Large-State-Space HMMs},
+year = {2005},
+isbn = {1595931805},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi-org.proxy.library.cornell.edu/10.1145/1102351.1102452},
+doi = {10.1145/1102351.1102452},
+abstract = {For Hidden Markov Models (HMMs) with fully connected transition models, the three fundamental problems of evaluating the likelihood of an observation sequence, estimating an optimal state sequence for the observations, and learning the model parameters, all have quadratic time complexity in the number of states. We introduce a novel class of non-sparse Markov transition matrices called Dense-Mostly-Constant (DMC) transition matrices that allow us to derive new algorithms for solving the basic HMM problems in sub-quadratic time. We describe the DMC HMM model and algorithms and attempt to convey some intuition for their usage. Empirical results for these algorithms show dramatic speedups for all three problems. In terms of accuracy, the DMC model yields strong results and outperforms the baseline algorithms even in domains known to violate the DMC assumption.},
+booktitle = {Proceedings of the 22nd International Conference on Machine Learning},
+pages = {800–807},
+numpages = {8},
+location = {Bonn, Germany},
+series = {ICML '05}
+}
+
+@inproceedings{ffthmm,
+ author = {Felzenszwalb, Pedro and Huttenlocher, Daniel and Kleinberg, Jon},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Thrun and L. Saul and B. Sch\"{o}lkopf},
+ pages = {},
+ publisher = {MIT Press},
+ title = {Fast Algorithms for Large-State-Space HMMs with Applications to Web Usage Analysis},
+ url = {https://proceedings.neurips.cc/paper/2003/file/9407c826d8e3c07ad37cb2d13d1cb641-Paper.pdf},
+ volume = {16},
+ year = {2004}
+}
+
+@MISC{convhmm,
+    author = {Javier R. Movellan and John Hershey and Josh Susskind},
+    title = {Real-Time Video Tracking Using Convolution HMMs},
+    year = {2004}
+}
+
+@ARTICLE{46546,
+
+  author={Lee, K.-F. and Hon, H.-W.},
+
+  journal={IEEE Transactions on Acoustics, Speech, and Signal Processing}, 
+
+  title={Speaker-independent phone recognition using hidden Markov models}, 
+
+  year={1989},
+
+  volume={37},
+
+  number={11},
+
+  pages={1641-1648},
+
+  doi={10.1109/29.46546}}
+
+@article{merialdo1994tagging,
+    title = "Tagging {E}nglish Text with a Probabilistic Model",
+    author = "Merialdo, Bernard",
+    journal = "Computational Linguistics",
+    volume = "20",
+    number = "2",
+    year = "1994",
+    url = "https://www.aclweb.org/anthology/J94-2001",
+    pages = "155--171",
 }

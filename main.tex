@@ -7,10 +7,15 @@
 
 \usepackage{mystyle}
 
-\usepackage{natbib}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{subcaption}
+
+%\usepackage{natbib}
+\usepackage[style=authortitle,backend=biber]{biblatex}
+\addbibresource{anthology.bib}
+\addbibresource{emnlp2020.bib}
+\renewcommand{\footnotesize}{\scriptsize}
 
 \usepackage{tikz-dependency}
 \usetikzlibrary{shapes.arrows, positioning, fit, bayesnet,
@@ -37,8 +42,20 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
   \end{frame}
 }
 
+% quotes
+\usepackage[style=british]{csquotes}
+
+\def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip1em
+  \hbox{}\nobreak\hfill #1%
+  \parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
+
+\newsavebox\mybox
+\newenvironment{aquote}[1]
+  {\savebox\mybox{#1}\begin{quote}\openautoquote\hspace*{-.7ex}}
+  {\unskip\closeautoquote\vspace*{1mm}\signed{\usebox\mybox}\end{quote}}
+
 %Information to be included in the title page:
-\title{Scaling Hidden Markov Models}
+\title{Scaling Hidden Markov Language Models}
 %\author{Justin T Chiu and Alexander Rush\\Cornell Tech}
 
 \setbeamertemplate{navigation symbols}{} 
@@ -48,44 +65,21 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
 \frame{\titlepage}
 
 \begin{frame}
-\frametitle{Latent Variables Models in NLP}
+\frametitle{Language Modeling}
+\begin{aquote}{Will Douglas Heaven (MIT Tech Review)}
+OpenAI’s new language generator GPT-3 is shockingly good—and completely mindless
+\end{aquote}
+
+\vspace{2em}
+A common paradigm in modern NLP
 \begin{itemize}
-\item NLP benchmarks are dominated by fully observed models
-\vspace{2em}
-    \begin{itemize}
-    \item Transformers
-    \vspace{2em}
-    \item Previously, Recurrent Neural Networks
-    \end{itemize}
-\vspace{2em}
-\item We instead explore latent variable models
+\item Large, opaque models
+\item Pretrained via language modeling on large data
+\item Fine-tuned on small data for downstream task
 \end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Latent Variable Models: Motivation}
-\begin{itemize}
-\item LVMs posit a generative process involving unseen variables
-\vspace{2em}
-\item Maintain uncertainty over latent representations,
-    rather than just output correlations
-\vspace{2em}
-\item Often improves interpretability and controllability
-\vspace{2em}
-\item Bottlenecked by the computational complexity of inference
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Research Question}
-To what extent is the performance of tractable
-latent variable models limited by scale and choices in parameterization?
-
-\vspace{2em}
-
-\textbf{This work:} Scale hidden Markov models (HMMs) on
-language modeling using techniques
-drawn from recent advances in neural networks
+\vspace{1em}
+Language modeling either has useful information for
+or is a necessary component of downstream tasks
 \end{frame}
 
 \begin{frame}
@@ -97,21 +91,53 @@ drawn from recent advances in neural networks
 \begin{itemize}
 \item Given the words seen so far, predict the next word
 \vspace{2em}
-\item Language requires modeling long-range phenomena
+\item Language requires encoding long-range context
 \end{itemize}
 \vspace{2em}
 \end{frame}
 
 \begin{frame}
-\frametitle{Hidden Markov Models in NLP}
+\frametitle{Language Models}
+
+Language models are primarily
+\vspace{1em}
 \begin{itemize}
-\item Simplest latent variable models for time series data
+\item Transformers
+    \begin{itemize}
+    \item Encode context into a continuous vector with stacks of attention-based neural networks
+    \end{itemize}
+\vspace{1em}
+\item Recurrent neural networks
+    \begin{itemize}
+    \item Encode context into a continuous vector with stacks of nonlinear dynamical systems
+    \end{itemize}
+\end{itemize}
+\vspace{1em}
+Both are difficult to interpret due to model complexity
+\end{frame}
+
+\begin{frame}
+\frametitle{Hidden Markov Language Models}
+\begin{itemize}
+\item Interpretability as a design decision
 \vspace{2em}
-\item Are thought to be very poor language models
+\item Context is encoded as a single integer
 \vspace{2em}
-\item We show they are better than previously thought, once scaled
+\item Interpretable, but thought to be very poor language models\footcite{buys2018hmm}
 \end{itemize}
 \end{frame}
+
+\begin{frame}
+\frametitle{Research Question}
+To what extent is the performance of HMMs limited by scale and choices in parameterization?
+
+\vspace{2em}
+
+\textbf{This work:} Scale HMMs on
+language modeling using techniques
+drawn from recent advances in neural networks
+\end{frame}
+
 
 \section{Background: Hidden Markov Models}
 \begin{frame}
@@ -134,6 +160,27 @@ drawn from recent advances in neural networks
     \end{itemize}
     % remove confound of approximate inference
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{HMM State Sizes}
+
+\centering
+\begin{tabular}{lllr}
+\toprule
+Year & Data & Model & States\\
+\midrule
+1989 & Phoneme Segmentation & HMM\footcite{46546} & 7\\
+1994 & POS & HMM\footcite{merialdo1994tagging}& 76\\
+2005 & Activity Monitoring & DMC HMM\footcite{dmc}& 1k\\
+2006 & 2D Image Tracking & Convolutional HMM\footcite{convhmm}& 100k\\
+2009 & LM & Split-POS HMM\footcite{huang2009poshmm}& 450\\
+2016 & POS & Neural HMM\footcite{tran2016hmm}& 37\\
+2016 & Web Traffic Analysis & FFT HMM\footcite{ffthmm}& 81\\
+2019 & Char LM & Cloned HMM\footcite{dedieu2019learning}& 30k\\
+\bottomrule
+\end{tabular}
+%\caption{}
 \end{frame}
 
 \begin{frame}
@@ -199,11 +246,12 @@ where we have the
 &\textnormal{and transition operators, }
     & [\Lambda_t]_{z_{t-1},z_t} &= p(x_t \mid z_t)p(z_t \mid z_{t-1})
 \end{align*}
-The result of each matvec gives the alphas of the forward algorithm,
-i.e. $\alpha_3 = \alpha_1\Lambda_2\Lambda_3$ has entries corresponding to $p(z_3, x_{1:3})$
 
-\vspace{1em}
-Requires $O(TZ^2)$ operations in total!
+\begin{itemize}
+\item Matrix representation of forward algorithm:
+$$\alpha_t = \alpha_{t-1}\Lambda_t$$
+\item Requires $O(TZ^2)$ operations in total!
+\end{itemize}
 \end{frame}
 
 \begin{comment}
@@ -289,24 +337,19 @@ We must overcome these issues when scaling HMMs
 \begin{frame}
 \frametitle{Technique 1: Neural Parameterization}
 \begin{itemize}
-\item The transition and emission matrices have $Z^2$ and $ZX$ entries
+\item Transition and emission matrices have $Z^2$ and $ZX$ entries
 \vspace{2em}
-\item Causes the number of parameters to explode as the state size increases
+\item More states lead to explosion in parameter count
 \vspace{2em}
-\item We instead use a low-dimensional decomposition of all conditional distributions
-    that greatly reduces the number of parameters
+\item Solution: Low dimensional factorization
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Neural Parameterization: Softmax}
-For both the transition and emission matrices,
-we use a softmax parameterization,
-which assumes a nonlinear $D$-dimensional decomposition
-\vspace{1em}
+\frametitle{Neural Parameterization: Softmax Parameterization}
 \[
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
-    \draw (0,0) rectangle (2,2) node[pos=.5] {$W$};
+    \draw (0,0) rectangle (2,2) node[pos=.5] {$A$};
 \end{tikzpicture}}}
 \propto
 \exp\left(\,
@@ -319,18 +362,21 @@ which assumes a nonlinear $D$-dimensional decomposition
 \end{tikzpicture}}}
 \,\right)
 \]
+
 \vspace{1em}
 with embeddings $U\in\R^{Z\times D}, V\in\R^{Z\times D}$ or $\R^{X \times D}$
 \vspace{1em}
 \begin{itemize}
 \item Can further parameterize $U$ or $V = \textrm{MLP}(E_u)$
+\vspace{1em}
+\item Similar for emissions
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Technique 2: State Dropout}
 \begin{itemize}
-\item Dropout is a common technique for regularizing neural networks
+\item Dropout is a common technique for regularizing neural networks \footcite{dropout}
 \vspace{2em}
     \begin{itemize}
     \item Reduces a network's reliance on any particular neuron
@@ -411,22 +457,19 @@ with embeddings $U\in\R^{Z\times D}, V\in\R^{Z\times D}$ or $\R^{X \times D}$
 \begin{itemize}
 \item Reduce cost of marginalization by enforcing structure
 \vspace{2em}
-\item Only allow each word to be emit by a subset of states
+\item Introduce emission constraints inspired by Cloned HMMs \footcite{dedieu2019learning}
 \vspace{2em}
-\item Emission sparsity induces sparsity in transition operators (not the transition
-    matrix)
+\item Only allow each word to be emit by a subset of states
 \vspace{2em}
 \item Cost of inference is quadratic in the size of the largest subset
     due to sparsity
 \end{itemize}
-(maybe show how this affects $\Lambda_t$? ie multiply masked emission column with $A$)
 \end{frame}
 
 \begin{frame}
 \frametitle{Block-Sparse Emission Constraints: Alignment}
 Start with a joint partitioning of both states and words
 \vspace{2em}
-
 \centering
 \begin{columns}
 \begin{column}{0.33\textwidth}
@@ -639,6 +682,12 @@ Given each word $x_t$, only the states in the correct group can occur
 \frametitle{Experiments}
 \begin{itemize}
 \item Language modeling on Penn Treebank
+\vspace{1em}
+\item Evaluate perplexity
+    \begin{itemize}
+    \item Function of likelihood
+    \item Lower is better
+    \end{itemize}
 \vspace{1em}
 \item Baselines
     \begin{itemize}
@@ -906,7 +955,7 @@ with learned $W\in\R^{R \times R}$
 \end{frame}
 
 \begin{frame}
-\frametitle{Speed Comparison}
+\frametitle{Speed Comparison\footnote{16k state VL-HMM takes 2100 s/epoch}}
 \begin{center}
 \begin{figure}
 \includegraphics[width=\textwidth]{img/lhmm-states-features-speed.png}
@@ -914,6 +963,13 @@ with learned $W\in\R^{R \times R}$
 \end{center}
 \end{frame}
 
+\begin{frame}
+\frametitle{Future Work}
+\begin{itemize}
+\item Extend to models with intractable exact inference
+\item Examine the tradeoffs between 
+\end{itemize}
+\end{frame}
 
 \begin{frame}
 \frametitle{Conclusion (TODO)}
@@ -933,8 +989,9 @@ with learned $W\in\R^{R \times R}$
 
 \begin{frame}
 \frametitle{Citations}
-\bibliographystyle{acl_natbib}
-\bibliography{anthology,emnlp2020}
+\printbibliography
+%\bibliographystyle{acl_natbib}
+%\bibliography{anthology,emnlp2020}
 \end{frame}
 
 \begin{frame}
