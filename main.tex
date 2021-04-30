@@ -67,7 +67,7 @@ ysep=0.2em,transform shape,line width=0.05em,top color=red,bottom color=red!50!b
 \begin{frame}
 \frametitle{Language Modeling}
 \begin{aquote}{Demi Ajayi (IBM)}
-How BERT and GPT models change the game for NLP
+BERT and GPT models change the game for NLP
 \end{aquote}
 
 \vspace{2em}
@@ -1004,9 +1004,11 @@ with learned $W\in\R^{R \times R}$
 \begin{frame}
 \frametitle{Conclusion}
 \begin{itemize}
-\item Demonstrated improvements in perplexity with larger state spaces
-\vspace{2em}
 \item Extended techniques from neural networks to HMMs
+\vspace{2em}
+\item Sped up inference using structure in both the emission and transition matrices
+\vspace{2em}
+\item Demonstrated improvements in perplexity with larger state spaces
 \end{itemize}
 \end{frame}
 
@@ -1015,6 +1017,8 @@ with learned $W\in\R^{R \times R}$
 \begin{itemize}
 \item Explore the performance of more complex interpretable models
     \begin{itemize}
+    \item Hierarchical HMMs
+    \item Factorial HMMs
     \item Probabilistic context-free grammars
     \item Switching linear dynamical systems\footcite{switch}
     \item Latent vector grammars\footcite{lveg}
@@ -1022,6 +1026,10 @@ with learned $W\in\R^{R \times R}$
 \item Explore other structure for fast matrix-vector products and tensor generalizations
     \begin{itemize}
     \item FFT-inspired algorithms\footcite{kal}
+    \end{itemize}
+\item Other forms of regularization for HMMs
+    \begin{itemize}
+    \item Diversity with DPPs\footcite{dhmm}
     \end{itemize}
 \item Learn sparsity constraints in SE-HMM
 \item Apply sparsity constraints to embedded HMMs\footcite{embhmm} for use in approximate inference
