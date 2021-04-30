@@ -1980,13 +1980,14 @@
     <bcf:citekey order="3">vogel1996hmm</bcf:citekey>
     <bcf:citekey order="4">dropout</bcf:citekey>
     <bcf:citekey order="5">dedieu2019learning</bcf:citekey>
-    <bcf:citekey order="6">performer</bcf:citekey>
-    <bcf:citekey order="6">rfa</bcf:citekey>
-    <bcf:citekey order="6">blanc2018adaptive</bcf:citekey>
-    <bcf:citekey order="7">switch</bcf:citekey>
-    <bcf:citekey order="8">lveg</bcf:citekey>
-    <bcf:citekey order="9">kal</bcf:citekey>
-    <bcf:citekey order="10">embhmm</bcf:citekey>
+    <bcf:citekey order="6">buys2018hmm</bcf:citekey>
+    <bcf:citekey order="7">performer</bcf:citekey>
+    <bcf:citekey order="7">rfa</bcf:citekey>
+    <bcf:citekey order="7">blanc2018adaptive</bcf:citekey>
+    <bcf:citekey order="8">switch</bcf:citekey>
+    <bcf:citekey order="9">lveg</bcf:citekey>
+    <bcf:citekey order="10">kal</bcf:citekey>
+    <bcf:citekey order="11">embhmm</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">
