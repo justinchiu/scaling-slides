@@ -123,7 +123,7 @@ Both are difficult to interpret due to model complexity
 \vspace{2em}
 \item Context is encoded as a single integer
 \vspace{2em}
-\item Interpretable, but thought to be very poor language models\footcite{buys2018hmm}
+\item Interpretable, but thought to be poor language models\footcite{buys2018hmm}
 \end{itemize}
 \end{frame}
 
@@ -170,7 +170,7 @@ drawn from recent advances in neural networks
 \toprule
 Year & Data & Model & States\\
 \midrule
-1989 & Phoneme Segmentation & HMM\footcite{46546} & 7\\
+1989 & Phoneme Segmentation & HMM\footcite*{46546} & 7\\
 1994 & POS & HMM\footcite{merialdo1994tagging}& 76\\
 2005 & Activity Monitoring & DMC HMM\footcite{dmc}& 1k\\
 2006 & 2D Image Tracking & Convolutional HMM\footcite{convhmm}& 100k\\
@@ -698,7 +698,7 @@ Given each word $x_t$, only the states in the correct group can occur
 \vspace{1em}
 \item Model
     \begin{itemize}
-    \item $2^{15}$ (32k) state very large HMM (VL-HMM)
+    \item $2^{15}$ (32k) state spare emission HMM (SE-HMM)
     \item $M=128$ groups (256 states per type), obtained via Brown Clustering
     \item Dropout rate of $0.5$ during training
     \end{itemize}
@@ -714,9 +714,9 @@ Given each word $x_t$, only the states in the correct group can occur
     %x=4cm,
     %enlarge x limits=0.6,
     ylabel={Validation Perplexity},
-    symbolic x coords={FF, LSTM, VL-HMM, HMM},
-    xticklabels={FF, LSTM, VL-HMM, HMM},
-    xtick={FF, LSTM, VL-HMM, HMM},
+    symbolic x coords={FF, LSTM, SE-HMM, HMM},
+    xticklabels={FF, LSTM, SE-HMM, HMM},
+    xtick={FF, LSTM, SE-HMM, HMM},
     tick pos=left,
     every axis plot/.append style={
       ybar,
@@ -730,7 +730,7 @@ Given each word $x_t$, only the states in the correct group can occur
 
 \addplot coordinates {(FF,159.9)};
 \addplot coordinates {(LSTM,93.6)};
-\addplot coordinates {(VL-HMM,115.8)};
+\addplot coordinates {(SE-HMM,115.8)};
 \addplot coordinates {(HMM,284.6)};
 
 \end{axis}
@@ -777,7 +777,7 @@ Validation perplexity on PTB by state size ($\lambda =0.5$ and $M=128$)
 \toprule
 Model                 & Param & Train & Val\\
 \midrule
-VL-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
+SE-HMM ($2^{14}$)     & 7.2M & 115    & 134 \\
 \quad - neural param  & 423M & 119    & 169 \\
 \quad - state dropout & 7.2M & 88     & 157 \\
 %\quad + uniform partition & 7.2M & 83     & 145 \\
@@ -916,7 +916,7 @@ with $\phi:\R^{Z \times R}\to\R_+^{Z \times R}$
 \item Feature map $\phi(U) = \exp\left(U W\right)$,
 with learned $W\in\R^{R \times R}$
 \vspace{2em}
-\item No sparsity constraints
+\item Baseline: Softmax HMM
 \end{itemize}
 \end{frame}
 
@@ -955,7 +955,7 @@ with learned $W\in\R^{R \times R}$
 \end{frame}
 
 \begin{frame}
-\frametitle{Speed Comparison\footnote{16k state VL-HMM takes 2100 s/epoch}}
+\frametitle{Speed Comparison\footnote{16k state SE-HMM takes 506 s/epoch on the same data}}
 \begin{center}
 \begin{figure}
 \includegraphics[width=\textwidth]{img/lhmm-states-features-speed.png}
@@ -964,23 +964,27 @@ with learned $W\in\R^{R \times R}$
 \end{frame}
 
 \begin{frame}
-\frametitle{Future Work}
+\frametitle{Discussion}
 \begin{itemize}
-\item Extend to models with intractable exact inference
-\item Examine the tradeoffs between 
+\item Reduced computation complexity of inference by 4x with NMF vs softmax HMM
+\vspace{2em}
+\item Scaling factor not as large as SE-HMM
+\vspace{2em}
+\item Validation PPL higher than SE-HMM
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Conclusion (TODO)}
+\frametitle{Future Work}
 \begin{itemize}
-\item Hopeful that HMMs can be competitive language models
-\vspace{2em}
-\item Introduced 4 techniques for tackling speed and overfitting
-\vspace{2em}
-\item Future work will extend to other discrete latent variable models
+\item Explore the performance of more complex interpretable models
+    \begin{itemize}
+    \item Switching linear dynamical systems\footcite{switch}
+    \end{itemize}
+\item Examine the tradeoffs between 
 \end{itemize}
 \end{frame}
+
 
 \begin{frame}
 \frametitle{EOS}
