@@ -71,11 +71,11 @@ OpenAI’s new language generator GPT-3 is shockingly good—and completely mind
 \end{aquote}
 
 \vspace{2em}
-A common paradigm in modern NLP
+Able to achieve strong performance in modern NLP tasks with
 \begin{itemize}
 \item Large, opaque models
 \item Pretrained via language modeling on large data
-\item Fine-tuned on small data for downstream task
+\item Fine-tuned for downstream task
 \end{itemize}
 \vspace{1em}
 Language modeling either has useful information for
@@ -91,7 +91,7 @@ or is a necessary component of downstream tasks
 \begin{itemize}
 \item Given the words seen so far, predict the next word
 \vspace{2em}
-\item Language requires encoding long-range context
+\item Requires encoding long-range context
 \end{itemize}
 \vspace{2em}
 \end{frame}
@@ -99,7 +99,7 @@ or is a necessary component of downstream tasks
 \begin{frame}
 \frametitle{Language Models}
 
-Language models are primarily
+Modern language models are primarily
 \vspace{1em}
 \begin{itemize}
 \item Transformers
@@ -146,9 +146,9 @@ drawn from recent advances in neural networks
 \item Classical models for unsupervised per-word tag induction
 \vspace{1em}
     \begin{itemize}
-    \item Part-of-speech induction
+    \item Part-of-speech induction\footcite{merialdo1994tagging}
     \vspace{1em}
-    \item Word alignment for translation
+    \item Word alignment for translation\footcite{vogel1996hmm}
     \end{itemize}
 \vspace{1em}
 \item Admits tractable exact inference
@@ -164,7 +164,27 @@ drawn from recent advances in neural networks
 
 \begin{frame}
 \frametitle{HMM State Sizes}
+\centering
+\begin{tabular}{lllr}
+\toprule
+Year & Data & Model & States\\
+\midrule
+1989 & Phoneme Segmentation & HMM & 7\\
+1994 & POS & HMM& 76\\
+2005 & Activity Monitoring & DMC HMM& 1k\\
+2006 & 2D Image Tracking & Convolutional HMM& 100k\\
+2009 & LM & Split-POS HMM& 450\\
+2016 & POS & Neural HMM& 37\\
+2016 & Web Traffic Analysis & FFT HMM& 81\\
+2019 & Char LM & Cloned HMM& 30k\\
+\bottomrule
+\end{tabular}
+%\caption{}
+\end{frame}
 
+\begin{comment}
+\begin{frame}
+\frametitle{HMM State Sizes}
 \centering
 \begin{tabular}{lllr}
 \toprule
@@ -182,6 +202,7 @@ Year & Data & Model & States\\
 \end{tabular}
 %\caption{}
 \end{frame}
+\end{comment}
 
 \begin{frame}
 \frametitle{Hidden Markov Models (HMMs)}
@@ -347,6 +368,8 @@ We must overcome these issues when scaling HMMs
 
 \begin{frame}
 \frametitle{Neural Parameterization: Softmax Parameterization}
+
+The transition matrix $A$ is factorized as follows:
 \[
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
     \draw (0,0) rectangle (2,2) node[pos=.5] {$A$};
@@ -364,7 +387,7 @@ We must overcome these issues when scaling HMMs
 \]
 
 \vspace{1em}
-with embeddings $U\in\R^{Z\times D}, V\in\R^{Z\times D}$ or $\R^{X \times D}$
+with state embeddings $U,V\in\R^{Z\times D}$
 \vspace{1em}
 \begin{itemize}
 \item Can further parameterize $U$ or $V = \textrm{MLP}(E_u)$
@@ -844,18 +867,18 @@ which take $O(Z^2)$ computation
 \frametitle{Fast Matrix-Vector Products}
 \begin{itemize}
 \item Goal is to reduce the naive matvec complexity of $O(Z^2)$
-\vspace{2em}
+\vspace{1em}
 \item Various methods
-    \vspace{1em}
     \begin{itemize}
     \item Sparsity (nnz entries)
-    \vspace{1em}
     \item Fast Fourier Transform ($Z \log Z$)
-    \vspace{1em}
-    \item Low-Rank decomposition ($ZR$)
+    \item Low-Rank factorization ($ZR$)
     \end{itemize}
-\vspace{2em}
+\vspace{1em}
 \item We utilize low-rank decompositions
+\vspace{1em}
+\item Connected to work in efficient attention and kernel approximations
+\footcite{performer,rfa,blanc2018adaptive}
 \end{itemize}
 \end{frame}
 
@@ -871,6 +894,7 @@ Factor transitions $A\in[0,1]^{Z\times Z}$ into product of $U,V\in\R^{Z \times R
     \draw (0,0) rectangle (2,2) node[pos=.5] {$A$};
 \end{tikzpicture}}}
 =
+\left(\,
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
     \draw (0,0) rectangle (1,.5) node[pos=.5] {$\alpha^\top$};
 \end{tikzpicture}}}
@@ -878,6 +902,7 @@ Factor transitions $A\in[0,1]^{Z\times Z}$ into product of $U,V\in\R^{Z \times R
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
     \draw (0,0) rectangle (1,2) node[pos=.5] {$U$};
 \end{tikzpicture}}}
+\,\right)
 \times 
 \vcenter{\hbox{\begin{tikzpicture}[baseline=-0.5ex]
     \draw (0,0) rectangle (2,1) node[pos=.5] {$V^\top$};
@@ -955,7 +980,7 @@ with learned $W\in\R^{R \times R}$
 \end{frame}
 
 \begin{frame}
-\frametitle{Speed Comparison\footnote{16k state SE-HMM takes 506 s/epoch on the same data}}
+\frametitle{Speed Comparison\footnote{$2^{14}$ (16k) state SE-HMM takes 506 s/epoch on the same data}}
 \begin{center}
 \begin{figure}
 \includegraphics[width=\textwidth]{img/lhmm-states-features-speed.png}
@@ -970,7 +995,16 @@ with learned $W\in\R^{R \times R}$
 \vspace{2em}
 \item Scaling factor not as large as SE-HMM
 \vspace{2em}
-\item Validation PPL higher than SE-HMM
+\item Validation PPL worse than SE-HMM
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusion}
+\begin{itemize}
+\item Demonstrated improvements in perplexity with larger state spaces
+\vspace{2em}
+\item Extended techniques from neural networks to HMMs
 \end{itemize}
 \end{frame}
 
@@ -979,9 +1013,16 @@ with learned $W\in\R^{R \times R}$
 \begin{itemize}
 \item Explore the performance of more complex interpretable models
     \begin{itemize}
+    \item Probabilistic context-free grammars
     \item Switching linear dynamical systems\footcite{switch}
+    \item Latent vector grammars\footcite{lveg}
     \end{itemize}
-\item Examine the tradeoffs between 
+\item Explore other structure for fast matrix-vector products and tensor generalizations
+    \begin{itemize}
+    \item FFT-inspired algorithms\footcite{kal}
+    \end{itemize}
+\item Learn sparsity constraints in SE-HMM
+\item Apply sparsity constraints to embedded HMMs\footcite{embhmm} for use in approximate inference
 \end{itemize}
 \end{frame}
 

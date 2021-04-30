@@ -736,3 +736,69 @@ series = {ICML '05}
   biburl    = {https://dblp.org/rec/journals/corr/FoersterGCSS16.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+
+@inproceedings{lveg,
+    title = "{G}aussian Mixture Latent Vector Grammars",
+    author = "Zhao, Yanpeng  and
+      Zhang, Liwen  and
+      Tu, Kewei",
+    booktitle = "Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2018",
+    address = "Melbourne, Australia",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/P18-1109",
+    doi = "10.18653/v1/P18-1109",
+    pages = "1181--1189",
+    abstract = "We introduce Latent Vector Grammars (LVeGs), a new framework that extends latent variable grammars such that each nonterminal symbol is associated with a continuous vector space representing the set of (infinitely many) subtypes of the nonterminal. We show that previous models such as latent variable grammars and compositional vector grammars can be interpreted as special cases of LVeGs. We then present Gaussian Mixture LVeGs (GM-LVeGs), a new special case of LVeGs that uses Gaussian mixtures to formulate the weights of production rules over subtypes of nonterminals. A major advantage of using Gaussian mixtures is that the partition function and the expectations of subtype rules can be computed using an extension of the inside-outside algorithm, which enables efficient inference and learning. We apply GM-LVeGs to part-of-speech tagging and constituency parsing and show that GM-LVeGs can achieve competitive accuracies.",
+}
+
+@inproceedings{
+kal,
+title={Kaleidoscope: An Efficient, Learnable Representation For All Structured Linear Maps},
+author={Tri Dao and Nimit Sohoni and Albert Gu and Matthew Eichhorn and Amit Blonder and Megan Leszczynski and Atri Rudra and Christopher Ré},
+booktitle={International Conference on Learning Representations},
+year={2020},
+url={https://openreview.net/forum?id=BkgrBgSYDS}
+}
+
+@inproceedings{embhmm,
+author = {Neal, Radford M. and Beal, Matthew J. and Roweis, Sam T.},
+title = {Inferring State Sequences for Non-Linear Systems with Embedded Hidden Markov Models},
+year = {2003},
+publisher = {MIT Press},
+address = {Cambridge, MA, USA},
+abstract = {We describe a Markov chain method for sampling from the distribution of the hidden state sequence in a non-linear dynamical system, given a sequence of observations. This method updates all states in the sequence simultaneously using an embedded Hidden Markov Model (HMM). An update begins with the creation of "pools" of candidate states at each time. We then define an embedded HMM whose states are indexes within these pools. Using a forward-backward dynamic programming algorithm, we can efficiently choose a state sequence with the appropriate probabilities from the exponentially large number of state sequences that pass through states in these pools. We illustrate the method in a simple one-dimensional example, and in an example showing how an embedded HMM can be used to in effect discretize the state space without any discretization error. We also compare the embedded HMM to a particle smoother on a more substantial problem of inferring human motion from 2D traces of markers.},
+booktitle = {Proceedings of the 16th International Conference on Neural Information Processing Systems},
+pages = {401–408},
+numpages = {8},
+location = {Whistler, British Columbia, Canada},
+series = {NIPS'03}
+}
+
+@misc{performer,
+      title={Rethinking Attention with Performers}, 
+      author={Krzysztof Choromanski and Valerii Likhosherstov and David Dohan and Xingyou Song and Andreea Gane and Tamas Sarlos and Peter Hawkins and Jared Davis and Afroz Mohiuddin and Lukasz Kaiser and David Belanger and Lucy Colwell and Adrian Weller},
+      year={2021},
+      eprint={2009.14794},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{rfa,
+      title={Random Feature Attention}, 
+      author={Hao Peng and Nikolaos Pappas and Dani Yogatama and Roy Schwartz and Noah A. Smith and Lingpeng Kong},
+      year={2021},
+      eprint={2103.02143},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{blanc2018adaptive,
+      title={Adaptive Sampled Softmax with Kernel Based Sampling}, 
+      author={Guy Blanc and Steffen Rendle},
+      year={2018},
+      eprint={1712.00527},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
