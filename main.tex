@@ -104,10 +104,19 @@ or is a necessary component of downstream tasks
 \begin{frame}
 \frametitle{Interpretable Models}
 
-Interpretable models provide insight into their generative processes
-
+\begin{itemize}
+\item Interpretable models give qualitative insight into data
 \vspace{2em}
-A short look at 3 interpretable models with increasing flexibility:
+\item Generative models provide interpretability through stories
+\vspace{2em}
+\item Generative stories provide intermediate decisions
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretable Models: Examples}
+\vspace{2em}
+Examples of interpretable generative models:
 \vspace{2em}
 \begin{itemize}
 \item Topic Model
@@ -119,68 +128,65 @@ A short look at 3 interpretable models with increasing flexibility:
 \end{frame}
 
 \begin{frame}
-\frametitle{Interpretable Models: Topic Model}
-\centering
+\frametitle{Interpretable Models: Topic Model\footcite{lda}}
+\begin{center}
 \includegraphics[height=2in]{img/topic_model.png}
-
+\end{center}
+\vspace{1em}
+Answers the question
 \begin{itemize}
-\item Does not directly model relationship between nearby words
+\item What is this document broadly about?
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Interpretable Models: Template Model\footcite{wiseman2018hsmm}}
-\centering
+\begin{center}
 \includegraphics[height=2in]{img/template.png}
+\end{center}
+\vspace{1em}
+Answers the question
 \begin{itemize}
-\item Produces chunks of text
-\item Simple dependencies between chunks
+\item Where did the information in this text come from?
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Interpretable Models: Entity Model\footcite{enlm}}
-\centering
+\begin{center}
 \includegraphics[width=3in]{img/entity.png}
+\end{center}
+\vspace{1em}
+Answers the question
 \begin{itemize}
-\item Recognizes and maintains information about entities
-\item Uses an uninterpretable language model for everything else
+\item Who is this text talking about?
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Interpretability}
+\frametitle{Performance of Interpretable Generative Models}
 
-Interpretable models have the following qualities
+Generative stories are interpretable when they
 \vspace{1em}
 \begin{itemize}
-\item Modularity
-\vspace{0.5em}
-    \begin{itemize}
-    \item Breaks complex decisions down into simple ones
-    \end{itemize}
-\vspace{1em}
-\item Simple dependencies
-\vspace{0.5em}
-    \begin{itemize}
-    \item Effects of decisions are local
-    \end{itemize}
-\vspace{1em}
-\item Simple alternatives
-\vspace{0.5em}
-    \begin{itemize}
-    \item Simple decisions have choices that are easy to reason through
-    \end{itemize}
+\item Decompose data into a sequence simple decisions
 \end{itemize}
+\vspace{2em}
+Generative stories provide interpretability at a cost
 \vspace{1em}
-These qualities also limit model expressivity
+\begin{itemize}
+\item Must consider all alternatives for unobserved decisions
+\end{itemize}
+\vspace{2em}
+Can we match the performance of
+uninterpretable language models while maintaining intepretability?
 \end{frame}
 
 \begin{frame}
 \frametitle{Hidden Markov Language Models}
 \begin{itemize}
-\item Modularity and simple dependencies as design decisions
+\item Interpretability as a design decision
 \vspace{2em}
 \item Focus on first-order HMMs, where context is encoded as a single integer
 \vspace{2em}

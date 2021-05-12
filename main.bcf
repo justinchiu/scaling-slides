@@ -1975,21 +1975,22 @@
     <bcf:datasource type="file" datatype="bibtex">emnlp2020.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="1">wiseman2018hsmm</bcf:citekey>
-    <bcf:citekey order="2">enlm</bcf:citekey>
-    <bcf:citekey order="3">merialdo1994tagging</bcf:citekey>
-    <bcf:citekey order="4">vogel1996hmm</bcf:citekey>
-    <bcf:citekey order="5">dropout</bcf:citekey>
-    <bcf:citekey order="6">dedieu2019learning</bcf:citekey>
-    <bcf:citekey order="7">buys2018hmm</bcf:citekey>
-    <bcf:citekey order="8">performer</bcf:citekey>
-    <bcf:citekey order="8">rfa</bcf:citekey>
-    <bcf:citekey order="8">blanc2018adaptive</bcf:citekey>
-    <bcf:citekey order="9">switch</bcf:citekey>
-    <bcf:citekey order="10">lveg</bcf:citekey>
-    <bcf:citekey order="11">kal</bcf:citekey>
-    <bcf:citekey order="12">dhmm</bcf:citekey>
-    <bcf:citekey order="13">embhmm</bcf:citekey>
+    <bcf:citekey order="1">lda</bcf:citekey>
+    <bcf:citekey order="2">wiseman2018hsmm</bcf:citekey>
+    <bcf:citekey order="3">enlm</bcf:citekey>
+    <bcf:citekey order="4">merialdo1994tagging</bcf:citekey>
+    <bcf:citekey order="5">vogel1996hmm</bcf:citekey>
+    <bcf:citekey order="6">dropout</bcf:citekey>
+    <bcf:citekey order="7">dedieu2019learning</bcf:citekey>
+    <bcf:citekey order="8">buys2018hmm</bcf:citekey>
+    <bcf:citekey order="9">performer</bcf:citekey>
+    <bcf:citekey order="9">rfa</bcf:citekey>
+    <bcf:citekey order="9">blanc2018adaptive</bcf:citekey>
+    <bcf:citekey order="10">switch</bcf:citekey>
+    <bcf:citekey order="11">lveg</bcf:citekey>
+    <bcf:citekey order="12">kal</bcf:citekey>
+    <bcf:citekey order="13">dhmm</bcf:citekey>
+    <bcf:citekey order="14">embhmm</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">
