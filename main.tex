@@ -85,6 +85,7 @@ Language modeling either has useful information for
 or is a necessary component of downstream tasks
 \end{frame}
 
+
 \begin{frame}
 \frametitle{Language Modeling}
 \begin{center}
@@ -95,38 +96,95 @@ or is a necessary component of downstream tasks
 \item Given the words seen so far, predict the next word
 \vspace{2em}
 \item Requires encoding long-range context
-\end{itemize}
 \vspace{2em}
+\item Most success with uninterpretable models 
+\end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Language Models}
+\frametitle{Interpretable Models}
 
-Modern language models are primarily
+Interpretable models provide insight into their generative processes
+
+\vspace{2em}
+A short look at 3 interpretable models with increasing flexibility:
+\vspace{2em}
+\begin{itemize}
+\item Topic Model
+\vspace{2em}
+\item Template Model
+\vspace{2em}
+\item Entity Language Model
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretable Models: Topic Model}
+\centering
+\includegraphics[height=2in]{img/topic_model.png}
+
+\begin{itemize}
+\item Does not directly model relationship between nearby words
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretable Models: Template Model\footcite{wiseman2018hsmm}}
+\centering
+\includegraphics[height=2in]{img/template.png}
+\begin{itemize}
+\item Produces chunks of text
+\item Simple dependencies between chunks
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretable Models: Entity Model\footcite{enlm}}
+\centering
+\includegraphics[width=3in]{img/entity.png}
+\begin{itemize}
+\item Recognizes and maintains information about entities
+\item Uses an uninterpretable language model for everything else
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretability}
+
+Interpretable models have the following qualities
 \vspace{1em}
 \begin{itemize}
-\item Transformers
+\item Modularity
+\vspace{0.5em}
     \begin{itemize}
-    \item Encode context into a continuous vector with stacks of attention-based neural networks
+    \item Breaks complex decisions down into simple ones
     \end{itemize}
 \vspace{1em}
-\item Recurrent neural networks
+\item Simple dependencies
+\vspace{0.5em}
     \begin{itemize}
-    \item Encode context into a continuous vector with stacks of nonlinear dynamical systems
+    \item Effects of decisions are local
+    \end{itemize}
+\vspace{1em}
+\item Simple alternatives
+\vspace{0.5em}
+    \begin{itemize}
+    \item Simple decisions have choices that are easy to reason through
     \end{itemize}
 \end{itemize}
 \vspace{1em}
-Both are difficult to interpret due to model complexity
+These qualities also limit model expressivity
 \end{frame}
 
 \begin{frame}
 \frametitle{Hidden Markov Language Models}
 \begin{itemize}
-\item Interpretability as a design decision
+\item Modularity and simple dependencies as design decisions
 \vspace{2em}
 \item Focus on first-order HMMs, where context is encoded as a single integer
 \vspace{2em}
-\item Interpretable, but thought to be poor language models\footcite{buys2018hmm}
+\item Thought to be poor language models
 \end{itemize}
 \end{frame}
 
