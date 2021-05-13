@@ -684,6 +684,23 @@ Given the unnormalized emission logits,
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Block-Sparse Emissions: Transition Operators}
+\begin{itemize}
+\item The transition operators are defined as
+$$\Lambda_t = A\diag([O]_{\cdot,x_t})$$
+with transition matrix $A$ and column of emission matrix $O$
+\vspace{1em}
+\item Makes the transition operators sparse
+    \vspace{1em}
+    \begin{itemize}
+    \item Not the transition matrix itself
+    \end{itemize}
+\vspace{1em}
+\item Only affects conditional inference, after observing words $x$
+\end{itemize}
+\end{frame}
+
 \begin{comment}
 \begin{frame}
 \frametitle{Block-Sparse Emissions: Inference}
