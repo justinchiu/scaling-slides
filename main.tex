@@ -167,20 +167,23 @@ Answers the question
 \begin{frame}
 \frametitle{Performance of Interpretable Generative Models}
 
-Generative stories are interpretable when they
+Generative stories are interpretable because they
 \vspace{1em}
 \begin{itemize}
 \item Decompose data into a sequence of simple decisions
 \end{itemize}
 \vspace{2em}
-Generative stories provide interpretability at a cost
+Interpretability is costly
 \vspace{1em}
 \begin{itemize}
 \item Must consider all alternatives for unobserved decisions
 \end{itemize}
 \vspace{2em}
-Can we match the performance of
-uninterpretable language models while maintaining intepretability?
+Cost of inference limits the size of models
+\vspace{1em}
+\begin{itemize}
+\item Will scaling generative models improve performance while maintaining interpretability?
+\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -198,7 +201,7 @@ uninterpretable language models while maintaining intepretability?
 \frametitle{Research Question}
 To what extent is the performance of HMMs limited by scale and choices in parameterization?
 
-\vspace{2em}
+\vspace{3em}
 
 \textbf{This work:} Scale HMMs on
 language modeling using techniques
@@ -344,25 +347,21 @@ $$\alpha_t = \alpha_{t-1}\Lambda_t$$
 \end{itemize}
 \end{frame}
 
-\begin{comment}
 \begin{frame}
 \frametitle{Transition Operators}
-skip slide? mainly to make the connection between distributional parameters
-and inference really concrete.
-\begin{itemize}
-    \item The transition operators $\alpha_1,\Lambda_t$ are functions of
-        the distributional parameters: starting state $\pi$, state transitions $A$,
-            and emissions $O$
-    \vspace{1em}
-    \item In particular
+We can also express the transition operators $\Lambda_t$ as functions of
+the transition matrix $A\in[0,1]^{Z \times Z}$ and emissions $O\in[0,1]^{Z \times X}$
+
+\vspace{1em}
+
+In particular
 \begin{align*}
-&\textnormal{the start } & \alpha_1 &= \pi \circ [O]_{\cdot,x_1},\\
+&\textnormal{the starting alpha } & \alpha_1 &= \pi \circ [O]_{\cdot,x_1},\\
 &\textnormal{and the transition operators }
     & \Lambda_t &= A\diag([O]_{\cdot, x_t})
 \end{align*}
-\end{itemize}
 \end{frame}
-\end{comment}
+
 
 \begin{frame}
 \frametitle{Inference}
