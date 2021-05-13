@@ -1987,10 +1987,7 @@
     <bcf:citekey order="9">rfa</bcf:citekey>
     <bcf:citekey order="9">blanc2018adaptive</bcf:citekey>
     <bcf:citekey order="10">switch</bcf:citekey>
-    <bcf:citekey order="11">lveg</bcf:citekey>
-    <bcf:citekey order="12">kal</bcf:citekey>
-    <bcf:citekey order="13">dhmm</bcf:citekey>
-    <bcf:citekey order="14">embhmm</bcf:citekey>
+    <bcf:citekey order="11">kal</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">

@@ -167,7 +167,7 @@ Answers the question
 \begin{frame}
 \frametitle{Performance of Interpretable Generative Models}
 
-Generative stories are interpretable because they
+Generative stories are interpretable
 \vspace{1em}
 \begin{itemize}
 \item Decompose data into a sequence of simple decisions
@@ -281,6 +281,8 @@ Year & Data & Model & States\\
 
 For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 
+\vspace{1em}
+
 \begin{center}
 \begin{tikzpicture}[]
 \node[latent] (z0) {$z_1$} ;
@@ -299,25 +301,23 @@ For times $t$, model states $z_t \in [Z]$, and tokens $x_t \in [X]$,
 \end{tikzpicture}
 \end{center}
 
-This yields the joint distribution
+\end{frame}
+
+\begin{frame}
+\frametitle{HMMs}
+HMMs have joint distribution
 $$p(x,z) = \prod_t p(x_t \mid z_t)p(z_t \mid z_{t-1})$$
-%with distributional parameters
-%\begin{align*}
-%&\textnormal{start state vector } & \pi\in[0,1]^{Z},
-%    & \textnormal{ with } &[\pi]_{z_0} &= p(z_0),\\
-%&\textnormal{transition matrix } & A\in[0,1]^{Z \times Z},
-%    & \textnormal{ with } &[A]_{z_{t-1},z_t} &= p(z_t \mid z_{t-1}),\\
-%&\textnormal{emission matrix } & O\in[0,1]^{Z \times X},
-%    & \textnormal{ with } &[O]_{z_t, x_t} &= p(x_t \mid z_t)\\
-%\end{align*}
-%
 with 
 \begin{align*}
 &\textnormal{start state } & p(z_1)&,\\
 &\textnormal{transitions } & p(z_t \mid z_{t-1})&,\\
 &\textnormal{and emissions } &  p(x_t \mid z_t)&
 \end{align*}
-represented as vectors and matrices
+represented as vectors and matrices:
+\begin{align*}
+&\textnormal{transition matrix } & A\in[0,1]^{Z \times Z}&,\\
+&\textnormal{emission matrix } & O\in[0,1]^{Z \times X} &
+\end{align*}
 
 \end{frame}
 
@@ -1076,7 +1076,7 @@ with learned $W\in\R^{R \times R}$
 \begin{frame}
 \frametitle{Discussion}
 \begin{itemize}
-\item Reduced computation complexity of inference by 4x with NMF vs softmax HMM
+\item Reduced computation complexity of inference by 4x with a low rank assumption
 \vspace{2em}
 \item Scaling factor not as large as SE-HMM
 \vspace{2em}
@@ -1089,7 +1089,7 @@ with learned $W\in\R^{R \times R}$
 \begin{itemize}
 \item Extended techniques from neural networks to HMMs
 \vspace{2em}
-\item Sped up inference using structure in both the emission and transition matrices
+\item Sped up inference by constraining structure in both the emission and transition matrices
 \vspace{2em}
 \item Demonstrated improvements in perplexity with larger state spaces
 \end{itemize}
@@ -1100,22 +1100,19 @@ with learned $W\in\R^{R \times R}$
 \begin{itemize}
 \item Explore the performance of more complex interpretable models
     \begin{itemize}
-    \item Hierarchical HMMs
-    \item Factorial HMMs
+    \item Hierarchical / Factorial HMMs
     \item Probabilistic context-free grammars
     \item Switching linear dynamical systems\footcite{switch}
-    \item Latent vector grammars\footcite{lveg}
     \end{itemize}
 \item Explore other structure for fast matrix-vector products and tensor generalizations
     \begin{itemize}
     \item FFT-inspired algorithms\footcite{kal}
     \end{itemize}
-\item Other forms of regularization for HMMs
-    \begin{itemize}
-    \item Diversity with DPPs\footcite{dhmm}
-    \end{itemize}
+%\item Other forms of regularization for HMMs
+    %\begin{itemize}
+    %\item Diversity with DPPs\footcite{dhmm}
+    %\end{itemize}
 \item Learn sparsity constraints in SE-HMM
-\item Apply sparsity constraints to embedded HMMs\footcite{embhmm} for use in approximate inference
 \end{itemize}
 \end{frame}
 
